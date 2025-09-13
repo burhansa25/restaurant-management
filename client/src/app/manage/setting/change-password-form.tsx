@@ -11,8 +11,12 @@ import {
 } from "@/schemas/account.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { useChangePasswordMutation } from "@/queries/useAccount";
+import { handleErrorApi } from "@/lib/utils";
+import { toast } from "@/components/ui/use-toast";
 
 export default function ChangePasswordForm() {
+  const changePasswordMutation = useChangePasswordMutation();
   const form = useForm<ChangePasswordBodyType>({
     resolver: zodResolver(ChangePasswordBody),
     defaultValues: {
@@ -21,12 +25,26 @@ export default function ChangePasswordForm() {
       confirmPassword: "",
     },
   });
-
+  const onSubmit = async (values: ChangePasswordBodyType) => {
+    if (changePasswordMutation.isPending) return;
+    try {
+      const result = await changePasswordMutation.mutateAsync(values);
+      toast({
+        description: result.payload.message,
+      });
+    } catch (error) {
+      handleErrorApi({
+        error,
+        setError: form.setError,
+      });
+    }
+  };
   return (
     <Form {...form}>
       <form
         noValidate
         className="grid auto-rows-max items-start gap-4 md:gap-8"
+        onSubmit={form.handleSubmit(onSubmit)}
       >
         <Card className="overflow-hidden" x-chunk="dashboard-07-chunk-4">
           <CardHeader>
