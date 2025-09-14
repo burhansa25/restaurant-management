@@ -1,15 +1,15 @@
-import { clsx, type ClassValue } from "clsx";
-import { UseFormSetError } from "react-hook-form";
-import { twMerge } from "tailwind-merge";
-import { EntityError } from "./http";
-import { toast } from "@/components/ui/use-toast";
+import { clsx, type ClassValue } from 'clsx'
+import { UseFormSetError } from 'react-hook-form'
+import { twMerge } from 'tailwind-merge'
+import { EntityError } from './http'
+import { toast } from '@/components/ui/use-toast'
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+  return twMerge(clsx(inputs))
 }
 
 export function normalizePath(path: string) {
-  return path.startsWith("/") ? path.slice(1) : path;
+  return path.startsWith('/') ? path.slice(1) : path
 }
 
 export const handleErrorApi = ({
@@ -17,49 +17,49 @@ export const handleErrorApi = ({
   setError,
   duration,
 }: {
-  error: any;
-  setError?: UseFormSetError<any>;
-  duration?: number;
+  error: any
+  setError?: UseFormSetError<any>
+  duration?: number
 }) => {
   if (error instanceof EntityError && setError) {
     error.payload.errors.forEach((item) => {
       setError(item.field, {
-        type: "server",
+        type: 'server',
         message: item.message,
-      });
-    });
+      })
+    })
   } else {
     toast({
-      title: "Lỗi",
-      description: error?.payload?.message ?? "Lỗi không xác định",
-      variant: "destructive",
+      title: 'Lỗi',
+      description: error?.payload?.message ?? 'Lỗi không xác định',
+      variant: 'destructive',
       duration: duration ?? 5000,
-    });
+    })
   }
-};
+}
 
-const isBrowser = typeof window !== "undefined";
+const isBrowser = typeof window !== 'undefined'
 
 export const getAccessTokenFromLocalStorage = () => {
-  return isBrowser ? localStorage.getItem("accessToken") : null;
-};
+  return isBrowser ? localStorage.getItem('accessToken') : null
+}
 
 export const setAccessTokenToLocalStorage = (token: string) => {
-  return isBrowser ? localStorage.setItem("accessToken", token) : null;
-};
+  return isBrowser ? localStorage.setItem('accessToken', token) : null
+}
 
 export const getRefreshTokenFromLocalStorage = () => {
-  return isBrowser ? localStorage.getItem("refreshToken") : null;
-};
+  return isBrowser ? localStorage.getItem('refreshToken') : null
+}
 
 export const setRefreshTokenToLocalStorage = (token: string) => {
-  return isBrowser ? localStorage.setItem("refreshToken", token) : null;
-};
+  return isBrowser ? localStorage.setItem('refreshToken', token) : null
+}
 
 export const removeAccessTokenFromLocalStorage = () => {
-  return isBrowser ? localStorage.removeItem("accessToken") : null;
-};
+  return isBrowser ? localStorage.removeItem('accessToken') : null
+}
 
 export const removeRefreshTokenFromLocalStorage = () => {
-  return isBrowser ? localStorage.removeItem("refreshToken") : null;
-};
+  return isBrowser ? localStorage.removeItem('refreshToken') : null
+}
