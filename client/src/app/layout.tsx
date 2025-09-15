@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import { Toaster } from '@/components/ui/toaster'
 import { ThemeProvider } from '@/components/theme-provider'
 import AppProvider from '../components/app-provider'
+import { Suspense } from 'react'
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -28,7 +29,7 @@ export default function RootLayout({
       >
         <AppProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            {children}
+            <Suspense> {children}</Suspense>
             <Toaster />
           </ThemeProvider>
         </AppProvider>
