@@ -83,7 +83,11 @@ export const checkAndRefreshToken = async ({
 
   const currentTime = Math.round(new Date().getTime() / 1000) // new Date() trả về mili giây nên chia 1000 để ra giây
 
-  if (decodeRefreshToken.exp < currentTime) return
+  if (decodeRefreshToken.exp <= currentTime) {
+    removeAccessTokenFromLocalStorage()
+    removeRefreshTokenFromLocalStorage()
+    return onError && onError()
+  }
 
   // kiểm tra 1/3 thời gian còn lại của accessToken để refresh token
   // thời gian còn lại được tính bằng công thức decodeAccessToken.exp - currentTime
