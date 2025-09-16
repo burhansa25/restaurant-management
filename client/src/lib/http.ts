@@ -124,6 +124,7 @@ const request = async <Response>(
       if (isClient) {
         //lỗi 401 khi chạy ở client
         if (!clientLogoutRequest) {
+          console.log('http: token invalid, logging out...')
           clientLogoutRequest = fetch('/api/auth/logout', {
             //logout route handler
             method: 'POST',
@@ -142,7 +143,7 @@ const request = async <Response>(
             localStorage.removeItem('refreshToken')
             clientLogoutRequest = null
             //redirect to login can make infinite loop error
-            // location.href = '/login'
+            location.href = '/login'
           }
         }
       } else {

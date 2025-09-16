@@ -1,5 +1,6 @@
 'use client'
 
+import { useAppContext } from '@/components/app-provider'
 import { getAccessTokenFromLocalStorage, getRefreshTokenFromLocalStorage } from '@/lib/utils'
 import { useLogoutMutation } from '@/queries/useAuth'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -9,6 +10,7 @@ import { useRef } from 'react'
 export default function LogoutPage() {
   const { mutateAsync } = useLogoutMutation()
   const router = useRouter()
+  const { setIsAuth } = useAppContext()
   const searchParams = useSearchParams()
   const refreshTokenFromURL = searchParams.get('refreshToken')
   const accessTokenFromURL = searchParams.get('accessToken')
@@ -22,11 +24,12 @@ export default function LogoutPage() {
         (accessTokenFromURL && accessTokenFromURL === getAccessTokenFromLocalStorage()))
     ) {
       mutateAsync().then(() => {
-        router.push('/login')
         setTimeout(() => {
           isLoggingOut.current = null
         }, 10)
         // setTimeout để tránh việc user logout duplicate
+        setIsAuth(false)
+        router.push('/login')
       })
     } else {
       // trường hợp hi hữu là token khi refreshToken hoặc accessToken không hợp lệ hoặc không khớp -> tránh dừng lại ở page này
