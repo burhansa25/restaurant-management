@@ -73,7 +73,6 @@ export const checkAndRefreshToken = async ({
   onError?: () => void
   onSuccess?: () => void
 }) => {
-
   // 1. Lấy token hiện tại từ localStorage
   const accessToken = getAccessTokenFromLocalStorage()
   const refreshToken = getRefreshTokenFromLocalStorage()
