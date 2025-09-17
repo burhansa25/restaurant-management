@@ -7,7 +7,7 @@ export default async function Dashboard() {
   const accessToken = cookieStore.get('accessToken')?.value!
   let name = ''
   try {
-    const result = await accountApiRequest.sMe(accessToken)
+    const result = await accountApiRequest.sGetMe(accessToken)
     name = result.payload.data.name
   } catch (error: any) {
     console.log(error)
