@@ -54,6 +54,7 @@ export default function UpdateProfileForm() {
     form.reset()
     setFile(null)
   }
+  
   const onSubmit = async (values: UpdateMeBodyType) => {
     if (updateMeMutation.isPending) return
     try {
