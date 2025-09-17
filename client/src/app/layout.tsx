@@ -29,7 +29,7 @@ export default function RootLayout({
       >
         <AppProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            <Suspense> {children}</Suspense>
+            {children}
             <Toaster />
           </ThemeProvider>
         </AppProvider>

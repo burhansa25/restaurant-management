@@ -4,10 +4,10 @@ import { useAppContext } from '@/components/app-provider'
 import { getAccessTokenFromLocalStorage, getRefreshTokenFromLocalStorage } from '@/lib/utils'
 import { useLogoutMutation } from '@/queries/useAuth'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import { useRef } from 'react'
 
-export default function LogoutPage() {
+function Logout() {
   const { mutateAsync } = useLogoutMutation()
   const router = useRouter()
   const { setIsAuth } = useAppContext()
@@ -35,7 +35,15 @@ export default function LogoutPage() {
       // trường hợp hi hữu là token khi refreshToken hoặc accessToken không hợp lệ hoặc không khớp -> tránh dừng lại ở page này
       router.push('/')
     }
-  }, [mutateAsync, router, refreshTokenFromURL, accessTokenFromURL])
+  }, [mutateAsync, router, refreshTokenFromURL, accessTokenFromURL, setIsAuth])
 
   return <div>Logging out...</div>
+}
+
+export default function LogoutPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Logout />
+    </Suspense>
+  )
 }
