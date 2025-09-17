@@ -18,7 +18,10 @@ import { useForm } from 'react-hook-form'
 import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Switch } from '@/components/ui/switch'
-import { useGetEmployeeDetailQuery } from '@/queries/useAccount'
+import { useGetEmployeeDetailQuery, useUpdateEmployeeAccountMutation } from '@/queries/useAccount'
+import { useUploadMediaMutation } from '@/queries/useMedia'
+import { toast } from '@/components/ui/use-toast'
+import { handleErrorApi } from '@/lib/utils'
 
 export default function EditEmployee({
   id,
@@ -70,6 +73,38 @@ export default function EditEmployee({
     }
   }, [data, form])
 
+  const updateEmployeeAccountMutation = useUpdateEmployeeAccountMutation(id as number)
+  const uploadMediaMutation = useUploadMediaMutation()
+
+  const onSubmit = async (values: UpdateEmployeeAccountBodyType) => {
+    if (updateEmployeeAccountMutation.isPending) return
+    try {
+      let body: { id: number } & UpdateEmployeeAccountBodyType = { ...values, id: id as number }
+      if (file) {
+        const formData = new FormData()
+        formData.append('file', file as Blob)
+        console.log(1)
+        const uploadImageResult = await uploadMediaMutation.mutateAsync(formData)
+        const imageURL = uploadImageResult.payload.data
+        body = {
+          ...body,
+          avatar: imageURL,
+        }
+      }
+      const result = await updateEmployeeAccountMutation.mutateAsync(body)
+      toast({
+        description: result.payload.message,
+      })
+      setId(undefined)
+      onSubmitSuccess && onSubmitSuccess()
+    } catch (error) {
+      handleErrorApi({
+        error,
+        setError: form.setError,
+      })
+    }
+  }
+
   return (
     <Dialog
       open={Boolean(id)}
@@ -85,7 +120,14 @@ export default function EditEmployee({
           <DialogDescription>Các trường tên, email, mật khẩu là bắt buộc</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form noValidate className="grid auto-rows-max items-start gap-4 md:gap-8" id="edit-employee-form">
+          <form
+            noValidate
+            className="grid auto-rows-max items-start gap-4 md:gap-8"
+            id="edit-employee-form"
+            onSubmit={form.handleSubmit(onSubmit, (e) => {
+              console.log(e)
+            })}
+          >
             <div className="grid gap-4 py-4">
               <FormField
                 control={form.control}
