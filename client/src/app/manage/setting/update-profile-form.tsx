@@ -63,7 +63,6 @@ export default function UpdateProfileForm() {
       if (file) {
         const formData = new FormData()
         formData.append('file', file as Blob)
-        console.log(1)
         const uploadImageResult = await uploadMediaMutation.mutateAsync(formData)
         const imageURL = uploadImageResult.payload.data
         body = {

@@ -73,7 +73,7 @@ export default function EditEmployee({
     }
   }, [data, form])
 
-  const updateEmployeeAccountMutation = useUpdateEmployeeAccountMutation(id as number)
+  const updateEmployeeAccountMutation = useUpdateEmployeeAccountMutation()
   const uploadMediaMutation = useUploadMediaMutation()
 
   const onSubmit = async (values: UpdateEmployeeAccountBodyType) => {
@@ -83,7 +83,6 @@ export default function EditEmployee({
       if (file) {
         const formData = new FormData()
         formData.append('file', file as Blob)
-        console.log(1)
         const uploadImageResult = await uploadMediaMutation.mutateAsync(formData)
         const imageURL = uploadImageResult.payload.data
         body = {

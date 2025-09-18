@@ -21,7 +21,7 @@ export default function RefreshToken() {
       },
     })
     // TIMEOUT phải bé hơn thời gian accessToken hết hạn
-    const TIMEOUT = 5000
+    const TIMEOUT = 300000
     interval = setInterval(
       () =>
         checkAndRefreshToken({

@@ -46,7 +46,7 @@ export const useCreateEmployeeAccountMutation = () => {
   })
 }
 
-export const useUpdateEmployeeAccountMutation = (id: number) => {
+export const useUpdateEmployeeAccountMutation = () => {
   return useMutation({
     mutationFn: ({ id, ...body }: { id: number } & UpdateEmployeeAccountBodyType) =>
       accountApiRequest.updateEmployee(id, body),
