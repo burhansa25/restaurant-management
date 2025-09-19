@@ -1,14 +1,14 @@
-import authApiRequests from '@/apiRequests/auth'
+import authApi from '@/apiRequests/auth'
 import { useMutation } from '@tanstack/react-query'
 
 export const useLoginMutation = () => {
   return useMutation({
-    mutationFn: authApiRequests.login,
+    mutationFn: authApi.login,
   })
 }
 
 export const useLogoutMutation = () => {
   return useMutation({
-    mutationFn: authApiRequests.logout,
+    mutationFn: authApi.logout,
   })
 }

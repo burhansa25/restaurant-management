@@ -1,4 +1,4 @@
-import accountApiRequest from '@/apiRequests/account'
+import accountApi from '@/apiRequests/account'
 import { queryClient } from '@/components/app-provider'
 import { UpdateEmployeeAccountBodyType } from '@/schemas/account.schema'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -6,40 +6,40 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 export const useAccountMeQuery = () => {
   return useQuery({
     queryKey: ['account-me'],
-    queryFn: accountApiRequest.getMe,
+    queryFn: accountApi.getMe,
   })
 }
 
 export const useUpdateMeMutation = () => {
   return useMutation({
-    mutationFn: accountApiRequest.updateMe,
+    mutationFn: accountApi.updateMe,
   })
 }
 
 export const useChangePasswordMutation = () => {
   return useMutation({
-    mutationFn: accountApiRequest.changePassword,
+    mutationFn: accountApi.changePassword,
   })
 }
 
 export const useAccountListQuery = () => {
   return useQuery({
     queryKey: ['accounts'],
-    queryFn: accountApiRequest.getListAccount,
+    queryFn: accountApi.getListAccount,
   })
 }
 
 export const useGetEmployeeDetailQuery = ({ id, enabled }: { id: number; enabled: boolean }) => {
   return useQuery({
     queryKey: ['accounts', id],
-    queryFn: () => accountApiRequest.getEmployeeDetail(id),
+    queryFn: () => accountApi.getEmployeeDetail(id),
     enabled,
   })
 }
 
 export const useCreateEmployeeAccountMutation = () => {
   return useMutation({
-    mutationFn: accountApiRequest.createEmployee,
+    mutationFn: accountApi.createEmployee,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'], exact: true })
     },
@@ -49,7 +49,7 @@ export const useCreateEmployeeAccountMutation = () => {
 export const useUpdateEmployeeAccountMutation = () => {
   return useMutation({
     mutationFn: ({ id, ...body }: { id: number } & UpdateEmployeeAccountBodyType) =>
-      accountApiRequest.updateEmployee(id, body),
+      accountApi.updateEmployee(id, body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] })
     },
@@ -58,7 +58,7 @@ export const useUpdateEmployeeAccountMutation = () => {
 
 export const useDeleteEmployeeAccountMutation = () => {
   return useMutation({
-    mutationFn: accountApiRequest.deleteEmployee,
+    mutationFn: accountApi.deleteEmployee,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'], exact: true })
     },

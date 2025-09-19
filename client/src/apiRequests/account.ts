@@ -10,7 +10,7 @@ import {
 
 const PREFIX_ACCOUNT = '/accounts'
 
-const accountApiRequest = {
+const accountApi = {
   getMe: () => http.get<AccountResType>(`${PREFIX_ACCOUNT}/me`),
 
   sGetMe: (accessToken: string) =>
@@ -35,4 +35,4 @@ const accountApiRequest = {
   deleteEmployee: (id: number) => http.delete<AccountResType>(`${PREFIX_ACCOUNT}/detail/${id}`),
 }
 
-export default accountApiRequest
+export default accountApi

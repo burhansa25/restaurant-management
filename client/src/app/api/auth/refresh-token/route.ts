@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 import jwt from 'jsonwebtoken'
 import { HttpError } from '@/lib/http'
-import authApiRequests from '@/apiRequests/auth'
+import authApi from '@/apiRequests/auth'
 
 export async function POST(request: Request) {
   const cookieStore = await cookies()
@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     return Response.json({ message: 'Không tìm thấy refreshToken' }, { status: 401 })
   }
   try {
-    const { payload } = await authApiRequests.sRefreshToken({
+    const { payload } = await authApi.sRefreshToken({
       refreshToken,
     })
 

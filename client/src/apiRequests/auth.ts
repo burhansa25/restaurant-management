@@ -7,7 +7,7 @@ import {
   RefreshTokenResType,
 } from '@/schemas/auth.schema'
 
-const authApiRequests = {
+const authApi = {
   refreshTokenRequest: null as Promise<{
     status: number
     payload: RefreshTokenResType
@@ -52,4 +52,4 @@ const authApiRequests = {
   },
 }
 
-export default authApiRequests
+export default authApi

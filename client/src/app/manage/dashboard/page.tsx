@@ -1,4 +1,4 @@
-import accountApiRequest from '@/apiRequests/account'
+import accountApi from '@/apiRequests/account'
 import { cookies } from 'next/headers'
 import React from 'react'
 
@@ -7,7 +7,7 @@ export default async function Dashboard() {
   const accessToken = cookieStore.get('accessToken')?.value!
   let name = ''
   try {
-    const result = await accountApiRequest.sGetMe(accessToken)
+    const result = await accountApi.sGetMe(accessToken)
     name = result.payload.data.name
   } catch (error: any) {
     console.log(error)

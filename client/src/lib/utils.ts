@@ -3,7 +3,7 @@ import { UseFormSetError } from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
 import { EntityError } from './http'
 import { toast } from '@/components/ui/use-toast'
-import authApiRequests from '@/apiRequests/auth'
+import authApi from '@/apiRequests/auth'
 import jwt from 'jsonwebtoken'
 import { DishStatus, OrderStatus, TableStatus } from '@/constants/type'
 import envConfig from '@/config'
@@ -99,7 +99,7 @@ export const checkAndRefreshToken = async ({
   if (decodeAccessToken.exp - currentTime < (decodeAccessToken.exp - decodeAccessToken.iat) / 3) {
     try {
       console.log('access token sắp hết hạn')
-      const res = await authApiRequests.refreshToken()
+      const res = await authApi.refreshToken()
       setAccessTokenToLocalStorage(res.payload.data.accessToken)
       setRefreshTokenToLocalStorage(res.payload.data.refreshToken)
       onSuccess && onSuccess()

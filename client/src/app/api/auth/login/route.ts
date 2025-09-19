@@ -1,4 +1,4 @@
-import authApiRequests from '@/apiRequests/auth'
+import authApi from '@/apiRequests/auth'
 import { LoginBodyType } from '@/schemas/auth.schema'
 import { cookies } from 'next/headers'
 import jwt from 'jsonwebtoken'
@@ -9,7 +9,7 @@ export async function POST(request: Request) {
 
   const cookieStore = await cookies()
   try {
-    const { payload } = await authApiRequests.sLogin(body)
+    const { payload } = await authApi.sLogin(body)
     const { accessToken, refreshToken } = payload.data
     const decodedAccessToken = jwt.decode(accessToken)
     const decodedRefreshToken = jwt.decode(refreshToken)

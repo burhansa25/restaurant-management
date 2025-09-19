@@ -1,4 +1,4 @@
-import authApiRequests from '@/apiRequests/auth'
+import authApi from '@/apiRequests/auth'
 import { cookies } from 'next/headers'
 
 export async function POST(request: Request) {
@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     return Response.json({ success: false, message: 'Không có token' }, { status: 200 })
   }
   try {
-    const result = await authApiRequests.sLogout({
+    const result = await authApi.sLogout({
       accessToken,
       refreshToken,
     })
