@@ -31,7 +31,7 @@ export const useAccountListQuery = () => {
 
 export const useGetEmployeeDetailQuery = ({ id, enabled }: { id: number; enabled: boolean }) => {
   return useQuery({
-    queryKey: ['employee', id],
+    queryKey: ['accounts', id],
     queryFn: () => accountApiRequest.getEmployeeDetail(id),
     enabled,
   })
@@ -41,7 +41,7 @@ export const useCreateEmployeeAccountMutation = () => {
   return useMutation({
     mutationFn: accountApiRequest.createEmployee,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['accounts'] })
+      queryClient.invalidateQueries({ queryKey: ['accounts'], exact: true })
     },
   })
 }
@@ -60,7 +60,7 @@ export const useDeleteEmployeeAccountMutation = () => {
   return useMutation({
     mutationFn: accountApiRequest.deleteEmployee,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['accounts'] })
+      queryClient.invalidateQueries({ queryKey: ['accounts'], exact: true })
     },
   })
 }

@@ -73,3 +73,5 @@ const setIsAuth = useCallback((isAuth: boolean) => {
 
 - Đóng dialog (X), click ra ngoài dialog → giữ nguyên dữ liệu đã nhập (cache đến khi F5).
 - Submit thành công → reset form values.
+
+- Khi create hoặc delete(account, dish, table) thì chỉ cần refetch lại list chứ không refectch tất cả detail của từng id -> tránh tiêu tốn tài nguyên dư thừa 

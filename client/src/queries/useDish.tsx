@@ -24,6 +24,7 @@ export const useCreateDishMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['dishes'],
+        exact: true,
       })
     },
   })
@@ -46,6 +47,7 @@ export const useDeleteDishMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['dishes'],
+        exact: true,
       })
     },
   })
