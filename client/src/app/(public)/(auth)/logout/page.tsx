@@ -10,7 +10,7 @@ import { useRef } from 'react'
 function Logout() {
   const { mutateAsync } = useLogoutMutation()
   const router = useRouter()
-  const { setIsAuth } = useAppContext()
+  const { setRole } = useAppContext()
   const searchParams = useSearchParams()
   const refreshTokenFromURL = searchParams.get('refreshToken')
   const accessTokenFromURL = searchParams.get('accessToken')
@@ -28,14 +28,14 @@ function Logout() {
           isLoggingOut.current = null
         }, 10)
         // setTimeout để tránh việc user logout duplicate
-        setIsAuth(false)
+        setRole(undefined)
         router.push('/login')
       })
     } else {
       // trường hợp hi hữu là token khi refreshToken hoặc accessToken không hợp lệ hoặc không khớp -> tránh dừng lại ở page này
       router.push('/')
     }
-  }, [mutateAsync, router, refreshTokenFromURL, accessTokenFromURL, setIsAuth])
+  }, [mutateAsync, router, refreshTokenFromURL, accessTokenFromURL, setRole])
 
   return <div>Logging out...</div>
 }

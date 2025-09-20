@@ -5,10 +5,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import RefreshToken from './refresh-token'
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import {
+  decodeToken,
   getAccessTokenFromLocalStorage,
   removeAccessTokenFromLocalStorage,
   removeRefreshTokenFromLocalStorage,
 } from '@/lib/utils'
+import { RoleType } from '@/types/jwt.types'
 
 // Create a client
 export const queryClient = new QueryClient({
@@ -21,30 +23,36 @@ export const queryClient = new QueryClient({
 })
 const AppContext = createContext({
   isAuth: false,
-  setIsAuth: (isAuth: boolean) => {},
+  role: undefined as RoleType | undefined,
+  setRole: (role?: RoleType | undefined) => {},
 })
 export const useAppContext = () => useContext(AppContext)
 
 export default function AppProvider({ children }: { children: React.ReactNode }) {
-  const [isAuth, setIsAuthState] = useState<boolean>(false)
+  const [role, setRoleState] = useState<RoleType | undefined>(undefined)
 
   useEffect(() => {
     const accessToken = getAccessTokenFromLocalStorage()
-    if (accessToken) setIsAuth(true)
+    if (accessToken) {
+      const role = decodeToken(accessToken).role
+      setRoleState(role)
+    }
   }, [])
 
-  const setIsAuth = useCallback((isAuth: boolean) => {
-    if (isAuth) {
-      setIsAuthState(true)
+  const setRole = useCallback((role?: RoleType | undefined) => {
+    if (role) {
+      setRoleState(role)
     } else {
-      setIsAuthState(false)
       removeAccessTokenFromLocalStorage()
       removeRefreshTokenFromLocalStorage()
     }
   }, [])
+
+  const isAuth = Boolean(role)
+
   //react19 and nextjs 15 don't need AppContext.Provider
   return (
-    <AppContext value={{ isAuth, setIsAuth }}>
+    <AppContext value={{ role, setRole, isAuth }}>
       <QueryClientProvider client={queryClient}>
         {children}
         <RefreshToken />

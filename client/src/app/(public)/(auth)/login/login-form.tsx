@@ -15,7 +15,7 @@ import { useEffect } from 'react'
 import { useAppContext } from '@/components/app-provider'
 
 export default function LoginForm() {
-  const { setIsAuth } = useAppContext()
+  const { setRole } = useAppContext()
   const loginMutation = useLoginMutation()
   const router = useRouter()
   const form = useForm<LoginBodyType>({
@@ -29,15 +29,15 @@ export default function LoginForm() {
   const clearTokens = searchParams.get('clearTokens')
   useEffect(() => {
     if (clearTokens === 'true') {
-      setIsAuth(false)
+      setRole(undefined)
     }
-  }, [clearTokens, setIsAuth])
+  }, [clearTokens, setRole])
 
   const onSubmit = async (data: LoginBodyType) => {
     try {
       const result = await loginMutation.mutateAsync(data)
       toast({ description: result.payload.message })
-      setIsAuth(true)
+      setRole(result.payload.data.account.role)
       router.push('/manage/dashboard')
     } catch (error) {
       handleErrorApi({ error, setError: form.setError })
