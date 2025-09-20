@@ -28,6 +28,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/lib/http.ts"
-  ],
+, "src/app/guest/menu/page.tsx"  ],
   "exclude": ["node_modules"]
 }
