@@ -4,6 +4,7 @@ import envConfig from '@/config'
 import { LoginResType } from '@/schemas/auth.schema'
 import { redirect } from 'next/navigation'
 import {
+  getAccessTokenFromLocalStorage,
   normalizePath,
   removeAccessTokenFromLocalStorage,
   removeRefreshTokenFromLocalStorage,
@@ -78,7 +79,7 @@ const request = async <Response>(
         }
 
   if (isClient) {
-    const accessToken = localStorage.getItem('accessToken')
+    const accessToken = getAccessTokenFromLocalStorage()
     if (accessToken) {
       baseHeaders.Authorization = `Bearer ${accessToken}`
     }
@@ -139,8 +140,8 @@ const request = async <Response>(
           } catch (error) {
             console.log(error)
           } finally {
-            localStorage.removeItem('accessToken')
-            localStorage.removeItem('refreshToken')
+            removeAccessTokenFromLocalStorage()
+            removeRefreshTokenFromLocalStorage()
             clientLogoutRequest = null
             //redirect to login can make infinite loop error
             location.href = '/login'
@@ -158,11 +159,11 @@ const request = async <Response>(
 
   if (isClient) {
     const normalizeURL = normalizePath(url)
-    if (normalizeURL === 'api/auth/login') {
+    if (['api/auth/login', 'api/guest/auth/login'].includes(normalizeURL)) {
       const { accessToken, refreshToken } = (payload as LoginResType).data
       setAccessTokenToLocalStorage(accessToken)
       setRefreshTokenToLocalStorage(refreshToken)
-    } else if (normalizeURL === 'api/auth/logout') {
+    } else if (['api/auth/logout', 'api/guest/auth/logout'].includes(normalizeURL)) {
       removeAccessTokenFromLocalStorage()
       removeRefreshTokenFromLocalStorage()
     }

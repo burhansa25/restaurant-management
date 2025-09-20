@@ -7,16 +7,52 @@ import { useForm } from 'react-hook-form'
 import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { GuestLoginBody, GuestLoginBodyType } from '@/schemas/guest.schema'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { useEffect } from 'react'
+import { useGuestLoginMutation } from '@/queries/useGuest'
+import { handleErrorApi } from '@/lib/utils'
+import { useAppContext } from '@/components/app-provider'
 
 export default function GuestLoginForm() {
+  const searchParams = useSearchParams()
+  const params = useParams()
+  const tableNumber = Number(params.number)
+  const token = searchParams.get('token')
+
+  const { setRole } = useAppContext()
+
+  const guestLoginMutation = useGuestLoginMutation()
+
   const form = useForm<GuestLoginBodyType>({
     resolver: zodResolver(GuestLoginBody),
     defaultValues: {
       name: '',
-      token: '',
-      tableNumber: 1,
+      token: token || '',
+      tableNumber,
     },
   })
+
+  const router = useRouter()
+  useEffect(() => {
+    if (!token) {
+      router.push('/')
+    }
+  }, [router, token])
+
+  const onSubmit = async (values: GuestLoginBodyType) => {
+    if (guestLoginMutation.isPending) return
+
+    try {
+      const result = await guestLoginMutation.mutateAsync(values)
+      setRole(result.payload.data.guest.role)
+      router.push('/guest/menu')
+    } catch (error) {
+      handleErrorApi({
+        error,
+        setError: form.setError,
+      })
+    }
+  }
 
   return (
     <Card className="mx-auto max-w-sm">
@@ -25,7 +61,13 @@ export default function GuestLoginForm() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form className="space-y-2 max-w-[600px] flex-shrink-0 w-full" noValidate>
+          <form
+            className="space-y-2 max-w-[600px] flex-shrink-0 w-full"
+            noValidate
+            onSubmit={form.handleSubmit(onSubmit, (e) => {
+              console.log(e)
+            })}
+          >
             <div className="grid gap-4">
               <FormField
                 control={form.control}
