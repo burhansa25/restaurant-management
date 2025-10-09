@@ -1,12 +1,15 @@
 'use client'
 
 import { Badge } from '@/components/ui/badge'
+import socket from '@/lib/socket'
 import { formatCurrency, getVietnameseOrderStatus } from '@/lib/utils'
 import { useGuestGetOrderListMutation } from '@/queries/useGuest'
+import { UpdateOrderResType } from '@/schemas/order.schema'
 import Image from 'next/image'
+import { useEffect } from 'react'
 
 export default function OrdersCart() {
-  const { data } = useGuestGetOrderListMutation()
+  const { data, refetch } = useGuestGetOrderListMutation()
   const orders = data?.payload.data || []
 
   const totalPrice = orders.reduce((total, order) => {
@@ -14,6 +17,36 @@ export default function OrdersCart() {
   }, 0)
 
   console.log(orders)
+
+  useEffect(() => {
+    if (socket.connected) {
+      onConnect()
+    }
+
+    function onConnect() {
+      console.log(socket.id)
+    }
+
+    function onDisconnect() {
+      console.log('disconnected from server')
+    }
+
+    function onUpdateOrder(data: UpdateOrderResType['data']) {
+      console.log('Reveived update from server:', data)
+      refetch()
+    }
+
+    socket.on('connect', onConnect)
+    socket.on('disconnect', onDisconnect)
+    socket.on('update-order', onUpdateOrder)
+
+    return () => {
+      socket.off('connect', onConnect)
+      socket.off('disconnect', onDisconnect)
+      socket.off('update-order', onUpdateOrder)
+    }
+  }, [refetch])
+
   return (
     <>
       <h1 className="text-center text-xl font-bold">🧾 Đơn hàng</h1>
