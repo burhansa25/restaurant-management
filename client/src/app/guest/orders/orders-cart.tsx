@@ -2,6 +2,7 @@
 
 import { Badge } from '@/components/ui/badge'
 import { toast } from '@/components/ui/use-toast'
+import { OrderStatus } from '@/constants/type'
 import socket from '@/lib/socket'
 import { formatCurrency, getVietnameseOrderStatus } from '@/lib/utils'
 import { useGuestGetOrderListMutation } from '@/queries/useGuest'
@@ -13,9 +14,36 @@ export default function OrdersCart() {
   const { data, refetch } = useGuestGetOrderListMutation()
   const orders = data?.payload.data || []
 
-  const totalPrice = orders.reduce((total, order) => {
-    return total + order.dishSnapshot.price * order.quantity
-  }, 0)
+  const { waitingForPayment, paid } = orders.reduce(
+    (total, order) => {
+      if (order.status === OrderStatus.Paid) {
+        return {
+          ...total,
+          paid: {
+            quantity: order.quantity + total.paid.quantity,
+            price: order.quantity * order.dishSnapshot.price + total.paid.price,
+          },
+        }
+      }
+      return {
+        ...total,
+        waitingForPayment: {
+          quantity: order.quantity + total.waitingForPayment.quantity,
+          price: order.quantity * order.dishSnapshot.price + total.waitingForPayment.price,
+        },
+      }
+    },
+    {
+      waitingForPayment: {
+        quantity: 0,
+        price: 0,
+      },
+      paid: {
+        quantity: 0,
+        price: 0,
+      },
+    },
+  )
 
   console.log(orders)
 
@@ -84,10 +112,18 @@ export default function OrdersCart() {
           </div>
         </div>
       ))}
+      {paid.quantity !== 0 && (
+        <div className="sticky bottom-0 p-2">
+          <div className="flex justify-between w-full max-w-md mt-4 text-lg text-white font-medium">
+            <span>Đơn đã thanh toán · {paid.quantity} món</span>
+            <span className="text-yellow-400 font-semibold">{formatCurrency(paid.price)}</span>
+          </div>
+        </div>
+      )}
       <div className="sticky bottom-0 p-2">
         <div className="flex justify-between w-full max-w-md mt-4 text-lg text-white font-medium">
-          <span>Giá tiền · {orders.length} món</span>
-          <span className="text-yellow-400 font-semibold">{formatCurrency(totalPrice)}</span>
+          <span>Đơn chưa thanh toán · {waitingForPayment.quantity} món</span>
+          <span className="text-yellow-400 font-semibold">{formatCurrency(waitingForPayment.price)}</span>
         </div>
       </div>
     </>
