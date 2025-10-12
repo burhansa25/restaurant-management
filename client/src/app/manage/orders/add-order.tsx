@@ -16,16 +16,23 @@ import GuestsDialog from '@/app/manage/orders/guests-dialog'
 import { CreateOrdersBodyType } from '@/schemas/order.schema'
 import Quantity from '@/app/guest/menu/quantity'
 import Image from 'next/image'
-import { cn, formatCurrency } from '@/lib/utils'
+import { cn, formatCurrency, handleErrorApi } from '@/lib/utils'
 import { DishStatus } from '@/constants/type'
 import { DishListResType } from '@/schemas/dish.schema'
+import { useGetAllDishes } from '@/queries/useDish'
+import { useCreateOrderMutation } from '@/queries/useOrder'
+import { useCreateGuestMutation } from '@/queries/useAccount'
+import { toast } from '@/components/ui/use-toast'
 
 export default function AddOrder() {
   const [open, setOpen] = useState(false)
   const [selectedGuest, setSelectedGuest] = useState<GetListGuestsResType['data'][0] | null>(null)
   const [isNewGuest, setIsNewGuest] = useState(true)
   const [orders, setOrders] = useState<CreateOrdersBodyType['orders']>([])
-  const dishes: DishListResType['data'] = []
+
+  const { data } = useGetAllDishes()
+
+  const dishes: DishListResType['data'] = useMemo(() => data?.payload.data || [], [data])
 
   const totalPrice = useMemo(() => {
     return dishes.reduce((result, dish) => {
@@ -34,6 +41,9 @@ export default function AddOrder() {
       return result + order.quantity * dish.price
     }, 0)
   }, [dishes, orders])
+
+  const createOrderMutation = useCreateOrderMutation()
+  const createGuestMutation = useCreateGuestMutation()
 
   const form = useForm<GuestLoginBodyType>({
     resolver: zodResolver(GuestLoginBody),
@@ -60,7 +70,37 @@ export default function AddOrder() {
     })
   }
 
-  const handleOrder = async () => {}
+  const handleOrder = async () => {
+    try {
+      let guestId = selectedGuest?.id
+      if (isNewGuest) {
+        const createGuestRes = await createGuestMutation.mutateAsync({
+          name,
+          tableNumber,
+        })
+        guestId = createGuestRes.payload.data.id
+      }
+      if (!guestId) {
+        toast({ description: 'Vui lòng chọn khách hàng hoặc tạo khách mới.' })
+        return
+      }
+      await createOrderMutation.mutateAsync({
+        guestId: guestId,
+        orders,
+      })
+      reset()
+    } catch (error) {
+      handleErrorApi({ error, setError: form.setError })
+    }
+  }
+
+  const reset = () => {
+    form.reset()
+    setSelectedGuest(null)
+    setOrders([])
+    setIsNewGuest(true)
+    setOpen(false)
+  }
 
   return (
     <Dialog onOpenChange={setOpen} open={open}>
