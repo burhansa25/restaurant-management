@@ -33,9 +33,9 @@ import { endOfDay, format, startOfDay } from 'date-fns'
 import { useGetOrderListQuery, useUpdateOrderMutation } from '@/queries/useOrder'
 import { useGetListTable } from '@/queries/useTable'
 import TableSkeleton from '@/app/manage/orders/table-skeleton'
-import socket from '@/lib/socket'
 import { toast } from '@/components/ui/use-toast'
 import { GuestCreateOrdersResType } from '@/schemas/guest.schema'
+import { useAppContext } from '@/components/app-provider'
 
 export const OrderTableContext = createContext({
   setOrderIdEdit: (value: number | undefined) => {},
@@ -145,13 +145,15 @@ export default function OrderTable() {
     setToDate(initToDate)
   }
 
+  const { socket } = useAppContext()
+
   useEffect(() => {
-    if (socket.connected) {
+    if (socket?.connected) {
       onConnect()
     }
 
     function onConnect() {
-      console.log(socket.id)
+      console.log(socket?.id)
     }
 
     function onDisconnect() {
@@ -196,20 +198,20 @@ export default function OrderTable() {
       refetch()
     }
 
-    socket.on('connect', onConnect)
-    socket.on('disconnect', onDisconnect)
-    socket.on('new-order', onNewOrder)
-    socket.on('update-order', onUpdateOrder)
-    socket.on('payment', onPayment)
+    socket?.on('connect', onConnect)
+    socket?.on('disconnect', onDisconnect)
+    socket?.on('new-order', onNewOrder)
+    socket?.on('update-order', onUpdateOrder)
+    socket?.on('payment', onPayment)
 
     return () => {
-      socket.off('connect', onConnect)
-      socket.off('disconnect', onDisconnect)
-      socket.off('new-order', onNewOrder)
-      socket.off('update-order', onUpdateOrder)
-      socket.off('payment', onPayment)
+      socket?.off('connect', onConnect)
+      socket?.off('disconnect', onDisconnect)
+      socket?.off('new-order', onNewOrder)
+      socket?.off('update-order', onUpdateOrder)
+      socket?.off('payment', onPayment)
     }
-  }, [fromDate, refetchOrderList, toDate])
+  }, [fromDate, refetchOrderList, toDate, socket])
 
   return (
     <OrderTableContext.Provider

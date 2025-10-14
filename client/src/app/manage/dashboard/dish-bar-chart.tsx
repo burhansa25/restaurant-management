@@ -56,7 +56,6 @@ export function DishBarChart({
     ...item,
     fill: colors[index] ?? colors[colors.length - 1],
   }))
-  console.log(chartDataColors)
   return (
     <Card>
       <CardHeader>

@@ -13,9 +13,10 @@ import { handleErrorApi } from '@/lib/utils'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { useAppContext } from '@/components/app-provider'
+import { socketInstance } from '@/lib/socket'
 
 export default function LoginForm() {
-  const { setRole } = useAppContext()
+  const { setRole, setSocket } = useAppContext()
   const loginMutation = useLoginMutation()
   const router = useRouter()
   const form = useForm<LoginBodyType>({
@@ -39,6 +40,7 @@ export default function LoginForm() {
       toast({ description: result.payload.message })
       setRole(result.payload.data.account.role)
       router.push('/manage/dashboard')
+      setSocket(socketInstance(result.payload.data.accessToken))
     } catch (error) {
       handleErrorApi({ error, setError: form.setError })
     }
