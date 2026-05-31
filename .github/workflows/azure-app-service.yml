@@ -31,13 +31,13 @@ jobs:
       - name: Generate Prisma Client
         working-directory: server
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: "file:./dev.db"
         run: npx prisma generate
 
       - name: Run Prisma migration
         working-directory: server
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: "file:./dev.db"
         run: npx prisma migrate deploy
 
       - name: Build backend
