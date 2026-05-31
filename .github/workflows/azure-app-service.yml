@@ -40,7 +40,7 @@ jobs:
         working-directory: server
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: npx prisma migrate deploy
+        run: npx prisma db push
 
       - name: Build backend
         working-directory: server
