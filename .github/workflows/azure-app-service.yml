@@ -1,127 +1,84 @@
-name: Azure App Service CI/CD
+name: Deploy Restaurant Management to Azure App Service
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  id-token: write
 
 env:
-  NODE_VERSION: 24.x
+  NODE_VERSION: 20.x
+  SERVER_APP_NAME: restaurant-server-05311438362
+  CLIENT_APP_NAME: restaurant-client-05311438362
 
 jobs:
-  backend:
-    name: Build, migrate, and deploy backend
+  deploy-server:
+    name: Build and Deploy Backend
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: server/package-lock.json
 
       - name: Install backend dependencies
         working-directory: server
         run: npm ci
 
-      - name: Generate Prisma client
+      - name: Generate Prisma Client
         working-directory: server
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npx prisma generate
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      - name: Apply Prisma migrations
+      - name: Run Prisma migration
         working-directory: server
-        run: npx prisma migrate deploy
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npx prisma migrate deploy
 
       - name: Build backend
         working-directory: server
         run: npm run build
 
-      - name: Prune backend dev dependencies
-        working-directory: server
-        run: npm prune --omit=dev
-
-      - name: Package backend
-        working-directory: server
-        run: zip -r ../server-package.zip dist prisma package.json package-lock.json node_modules
-
-      - name: Azure login
-        uses: azure/login@v2
+      - name: Deploy backend to Azure App Service
+        uses: azure/webapps-deploy@v3
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          app-name: ${{ env.SERVER_APP_NAME }}
+          publish-profile: ${{ secrets.SERVER_PUBLISH_PROFILE }}
+          package: server
 
-      - name: Deploy backend to App Service
-        uses: azure/cli@v2
-        with:
-          inlineScript: |
-            az webapp deploy \
-              --resource-group "${{ secrets.RESOURCE_GROUP }}" \
-              --name "${{ secrets.SERVER_APP_NAME }}" \
-              --src-path "${{ github.workspace }}/server-package.zip" \
-              --type zip
-
-  frontend:
-    name: Build and deploy frontend
+  deploy-client:
+    name: Build and Deploy Frontend
     runs-on: ubuntu-latest
-    needs: backend
+    needs: deploy-server
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: client/package-lock.json
 
       - name: Install frontend dependencies
         working-directory: client
-        run: npm install
+        run: npm ci
 
       - name: Build frontend
         working-directory: client
-        run: npm run build
         env:
           NEXT_PUBLIC_API_ENDPOINT: ${{ secrets.NEXT_PUBLIC_API_ENDPOINT }}
           NEXT_PUBLIC_URL: ${{ secrets.NEXT_PUBLIC_URL }}
+        run: npm run build
 
-      - name: Prune frontend dev dependencies
-        working-directory: client
-        run: npm prune --omit=dev
-
-      - name: Package frontend
-        working-directory: client
-        run: zip -r ../client-package.zip .next public package.json package-lock.json next.config.ts node_modules
-
-      - name: Azure login
-        uses: azure/login@v2
+      - name: Deploy frontend to Azure App Service
+        uses: azure/webapps-deploy@v3
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Deploy frontend to App Service
-        uses: azure/cli@v2
-        with:
-          inlineScript: |
-            az webapp deploy \
-              --resource-group "${{ secrets.RESOURCE_GROUP }}" \
-              --name "${{ secrets.CLIENT_APP_NAME }}" \
-              --src-path "${{ github.workspace }}/client-package.zip" \
-              --type zip
+          app-name: ${{ env.CLIENT_APP_NAME }}
+          publish-profile: ${{ secrets.CLIENT_PUBLISH_PROFILE }}
+          package: client
