@@ -26,8 +26,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
-    "src/lib/http.ts"
-, "src/app/guest/menu/page.tsx"  ],
+    ".next/types/**/*.ts"
+  ],
   "exclude": ["node_modules"]
 }
