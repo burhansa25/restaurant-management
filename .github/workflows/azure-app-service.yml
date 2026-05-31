@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - playout
+  workflow_dispatch:
 
 env:
   NODE_VERSION: 20.x
