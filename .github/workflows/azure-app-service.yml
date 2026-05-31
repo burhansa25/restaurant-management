@@ -9,8 +9,8 @@ on:
 
 env:
   NODE_VERSION: 20.x
-  SERVER_APP_NAME: restaurant-server-05311438362
-  CLIENT_APP_NAME: restaurant-client-05311438362
+  SERVER_APP_NAME: restaurant-server-053118362
+  CLIENT_APP_NAME: restaurant-client-053118362
 
 jobs:
   deploy-server:
