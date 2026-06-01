@@ -1,9 +1,10 @@
-name: Deploy Restaurant Management with Docker
+name: Deploy Restaurant Management Infrastructure (Flipped Pipeline)
 
 on:
   push:
     branches:
-      - playout # Keeping it on playout for your testing safety loop
+      - main     
+      - playout  
   workflow_dispatch:
 
 jobs:
@@ -27,17 +28,19 @@ jobs:
         with:
           context: ./server
           push: true
-          # Passes your database URL context down into the Prisma builder stage securely
+          # Only passes production DB connection string if branch is exactly 'playout'
           build-args: |
-            DATABASE_URL=${{ secrets.DATABASE_URL }}
-          tags: ${{ secrets.AZURE_REGISTRY }}/${{ secrets.SERVER_IMAGE }}:latest
+            DATABASE_URL=${{ github.ref_name == 'playout' && secrets.DATABASE_URL || secrets.STAGING_DATABASE_URL }}
+          # Tags production builds as :latest, and daily main-branch dev builds as :staging
+          tags: |
+            ${{ secrets.AZURE_REGISTRY }}/${{ secrets.SERVER_IMAGE }}:${{ github.ref_name == 'playout' && 'latest' || 'staging' }}
 
       - name: Deploy Backend to Azure Web App for Containers
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ secrets.SERVER_APP_NAME }}
-          publish-profile: ${{ secrets.SERVER_PUBLISH_PROFILE }}
-          images: ${{ secrets.AZURE_REGISTRY }}/${{ secrets.SERVER_IMAGE }}:latest
+          app-name: ${{ github.ref_name == 'playout' && secrets.SERVER_APP_NAME || secrets.STAGING_SERVER_APP_NAME }}
+          publish-profile: ${{ github.ref_name == 'playout' && secrets.SERVER_PUBLISH_PROFILE || secrets.STAGING_SERVER_PUBLISH_PROFILE }}
+          images: ${{ secrets.AZURE_REGISTRY }}/${{ secrets.SERVER_IMAGE }}:${{ github.ref_name == 'playout' && 'latest' || 'staging' }}
 
   deploy-client:
     name: Build and Push Frontend Container
@@ -60,15 +63,17 @@ jobs:
         with:
           context: ./client
           push: true
-          # Feeds your specific Next environment variables seamlessly into your custom Docker builder multi-stage
+          # Dynamically sets frontend endpoints depending on whether it's an insider build or full release
           build-args: |
-            NEXT_PUBLIC_API_ENDPOINT=${{ secrets.NEXT_PUBLIC_API_ENDPOINT }}
-            NEXT_PUBLIC_URL=${{ secrets.NEXT_PUBLIC_URL }}
-          tags: ${{ secrets.AZURE_REGISTRY }}/${{ secrets.CLIENT_IMAGE }}:latest
+            NEXT_PUBLIC_API_ENDPOINT=${{ github.ref_name == 'playout' && secrets.NEXT_PUBLIC_API_ENDPOINT || secrets.STAGING_NEXT_PUBLIC_API_ENDPOINT }}
+            NEXT_PUBLIC_URL=${{ github.ref_name == 'playout' && secrets.NEXT_PUBLIC_URL || secrets.STAGING_NEXT_PUBLIC_URL }}
+            DOCKER_PUBLIC_API_ENDPOINT=${{ github.ref_name == 'playout' && secrets.NEXT_PUBLIC_API_ENDPOINT || secrets.STAGING_NEXT_PUBLIC_API_ENDPOINT }}
+          tags: |
+            ${{ secrets.AZURE_REGISTRY }}/${{ secrets.CLIENT_IMAGE }}:${{ github.ref_name == 'playout' && 'latest' || 'staging' }}
 
       - name: Deploy Frontend to Azure Web App for Containers
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ secrets.CLIENT_APP_NAME }}
-          publish-profile: ${{ secrets.CLIENT_PUBLISH_PROFILE }}
-          images: ${{ secrets.REGISTRY }}/${{ secrets.CLIENT_IMAGE }}:latest
+          app-name: ${{ github.ref_name == 'playout' && secrets.CLIENT_APP_NAME || secrets.STAGING_CLIENT_APP_NAME }}
+          publish-profile: ${{ github.ref_name == 'playout' && secrets.CLIENT_PUBLISH_PROFILE || secrets.STAGING_CLIENT_PUBLISH_PROFILE }}
+          images: ${{ secrets.AZURE_REGISTRY }}/${{ secrets.CLIENT_IMAGE }}:${{ github.ref_name == 'playout' && 'latest' || 'staging' }}
