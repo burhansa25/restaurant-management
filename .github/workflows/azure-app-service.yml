@@ -3,7 +3,7 @@ name: Deploy Restaurant Management to Azure App Service
 on:
   push:
     branches:
-      - main
+      ## main
       ## - playout
   workflow_dispatch:
 
