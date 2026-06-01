@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - playout # Keeping it on playout for your testing safety loop
+  workflow_dispatch:
 
 env:
   REGISTRY: acrburhan053118362.azurecr.io
