@@ -11,7 +11,7 @@ FROM node:24-bookworm-slim AS builder
 
 WORKDIR /app
 
-ARG DATABASE_URL=postgresql://postgres:password@localhost:5432/restaurant_db?schema=public
+ARG DATABASE_URL=file:./dev.db
 ENV DATABASE_URL=$DATABASE_URL
 
 RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
@@ -28,22 +28,19 @@ FROM node:24-bookworm-slim AS runner
 
 WORKDIR /app
 
-ARG DATABASE_URL=postgresql://postgres:password@localhost:5432/restaurant_db?schema=public
 ENV DOCKER_HOST=0.0.0.0
 ENV PORT=4000
-ENV DATABASE_URL=$DATABASE_URL
+ENV NODE_ENV=production
 
-RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends openssl curl && rm -rf /var/lib/apt/lists/*
 
 COPY package*.json ./
 COPY prisma ./prisma
-RUN npm ci && npx prisma generate && npm cache clean --force
+RUN npm ci && npm cache clean --force
 
 COPY --from=builder /app/dist ./dist
 RUN mkdir -p uploads
 
-ENV NODE_ENV=production
-
 EXPOSE 4000
 
-CMD ["npm", "run", "start"]
+CMD ["sh", "-c", "npx prisma generate && npx prisma migrate deploy && npm run start"]
