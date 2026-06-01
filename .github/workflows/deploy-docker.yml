@@ -3,7 +3,8 @@ name: Deploy Restaurant Management with Docker
 on:
   push:
     branches:
-      - playout # Keeping it on playout for your testing safety loop
+      - main
+      #- playout # Keeping it on playout for your testing safety loop
   workflow_dispatch:
 
 jobs:
