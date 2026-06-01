@@ -2,9 +2,9 @@ name: Build and Deploy to Azure
 
 on:
   push:
-    branches: [ main, develop ]
+    # branches: [ main, develop ]
   pull_request:
-    branches: [ main ]
+    # branches: [ main ]
   workflow_dispatch: 
 
 env:
