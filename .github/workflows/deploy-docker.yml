@@ -16,6 +16,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set Dynamic Database URL
+        run: |
+          if [ "${{ github.ref_name }}" = "playout" ]; then
+            echo "RESOLVED_DB_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
+          else
+            echo "RESOLVED_DB_URL=${{ secrets.STAGING_DATABASE_URL }}" >> $GITHUB_ENV
+          fi
+
       - name: Log into Azure Container Registry
         uses: azure/docker-login@v2
         with:
@@ -28,10 +36,8 @@ jobs:
         with:
           context: ./server
           push: true
-          # Only passes production DB connection string if branch is exactly 'playout'
           build-args: |
-            DATABASE_URL=${{ github.ref_name == 'playout' && secrets.DATABASE_URL || secrets.STAGING_DATABASE_URL }}
-          # Tags production builds as :latest, and daily main-branch dev builds as :staging
+            DATABASE_URL=${{ env.RESOLVED_DB_URL }}
           tags: |
             ${{ secrets.AZURE_REGISTRY }}/${{ secrets.SERVER_IMAGE }}:${{ github.ref_name == 'playout' && 'latest' || 'staging' }}
 
@@ -51,6 +57,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set Dynamic Frontend Endpoints
+        run: |
+          if [ "${{ github.ref_name }}" = "playout" ]; then
+            echo "RESOLVED_API_ENDPOINT=${{ secrets.NEXT_PUBLIC_API_ENDPOINT }}" >> $GITHUB_ENV
+            echo "RESOLVED_PUBLIC_URL=${{ secrets.NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
+          else
+            echo "RESOLVED_API_ENDPOINT=${{ secrets.STAGING_NEXT_PUBLIC_API_ENDPOINT }}" >> $GITHUB_ENV
+            echo "RESOLVED_PUBLIC_URL=${{ secrets.STAGING_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
+          fi
+
       - name: Log into Azure Container Registry
         uses: azure/docker-login@v2
         with:
@@ -63,11 +79,10 @@ jobs:
         with:
           context: ./client
           push: true
-          # Dynamically sets frontend endpoints depending on whether it's an insider build or full release
           build-args: |
-            NEXT_PUBLIC_API_ENDPOINT=${{ github.ref_name == 'playout' && secrets.NEXT_PUBLIC_API_ENDPOINT || secrets.STAGING_NEXT_PUBLIC_API_ENDPOINT }}
-            NEXT_PUBLIC_URL=${{ github.ref_name == 'playout' && secrets.NEXT_PUBLIC_URL || secrets.STAGING_NEXT_PUBLIC_URL }}
-            DOCKER_PUBLIC_API_ENDPOINT=${{ github.ref_name == 'playout' && secrets.NEXT_PUBLIC_API_ENDPOINT || secrets.STAGING_NEXT_PUBLIC_API_ENDPOINT }}
+            NEXT_PUBLIC_API_ENDPOINT=${{ env.RESOLVED_API_ENDPOINT }}
+            NEXT_PUBLIC_URL=${{ env.RESOLVED_PUBLIC_URL }}
+            DOCKER_PUBLIC_API_ENDPOINT=${{ env.RESOLVED_API_ENDPOINT }}
           tags: |
             ${{ secrets.AZURE_REGISTRY }}/${{ secrets.CLIENT_IMAGE }}:${{ github.ref_name == 'playout' && 'latest' || 'staging' }}
 
