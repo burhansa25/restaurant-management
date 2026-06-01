@@ -6,13 +6,6 @@ on:
       - playout # Keeping it on playout for your testing safety loop
   workflow_dispatch:
 
-env:
-  REGISTRY: acrburhan053118362.azurecr.io
-  SERVER_APP_NAME: restaurant-server-053118362
-  CLIENT_APP_NAME: restaurant-client-053118362
-  SERVER_IMAGE: restaurant-server
-  CLIENT_IMAGE: restaurant-client
-
 jobs:
   deploy-server:
     name: Build and Push Backend Container
@@ -25,7 +18,7 @@ jobs:
       - name: Log into Azure Container Registry
         uses: azure/docker-login@v2
         with:
-          login-server: ${{ env.REGISTRY }}
+          login-server: ${{ secrets.AZURE_REGISTRY }}
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
@@ -37,14 +30,14 @@ jobs:
           # Passes your database URL context down into the Prisma builder stage securely
           build-args: |
             DATABASE_URL=${{ secrets.DATABASE_URL }}
-          tags: ${{ env.REGISTRY }}/${{ env.SERVER_IMAGE }}:latest
+          tags: ${{ secrets.AZURE_REGISTRY }}/${{ secrets.SERVER_IMAGE }}:latest
 
       - name: Deploy Backend to Azure Web App for Containers
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ env.SERVER_APP_NAME }}
+          app-name: ${{ secrets.SERVER_APP_NAME }}
           publish-profile: ${{ secrets.SERVER_PUBLISH_PROFILE }}
-          images: ${{ env.REGISTRY }}/${{ env.SERVER_IMAGE }}:latest
+          images: ${{ secrets.AZURE_REGISTRY }}/${{ secrets.SERVER_IMAGE }}:latest
 
   deploy-client:
     name: Build and Push Frontend Container
@@ -58,7 +51,7 @@ jobs:
       - name: Log into Azure Container Registry
         uses: azure/docker-login@v2
         with:
-          login-server: ${{ env.REGISTRY }}
+          login-server: ${{ secrets.AZURE_REGISTRY }}
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
@@ -71,11 +64,11 @@ jobs:
           build-args: |
             NEXT_PUBLIC_API_ENDPOINT=${{ secrets.NEXT_PUBLIC_API_ENDPOINT }}
             NEXT_PUBLIC_URL=${{ secrets.NEXT_PUBLIC_URL }}
-          tags: ${{ env.REGISTRY }}/${{ env.CLIENT_IMAGE }}:latest
+          tags: ${{ secrets.AZURE_REGISTRY }}/${{ secrets.CLIENT_IMAGE }}:latest
 
       - name: Deploy Frontend to Azure Web App for Containers
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ env.CLIENT_APP_NAME }}
+          app-name: ${{ secrets.CLIENT_APP_NAME }}
           publish-profile: ${{ secrets.CLIENT_PUBLISH_PROFILE }}
-          images: ${{ env.REGISTRY }}/${{ env.CLIENT_IMAGE }}:latest
+          images: ${{ secrets.REGISTRY }}/${{ secrets.CLIENT_IMAGE }}:latest
