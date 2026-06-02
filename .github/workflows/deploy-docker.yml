@@ -13,8 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      IMAGE_TAG: ${{ github.ref_name == 'playout' && 'latest' || 'staging' }}
-
+      IMAGE_TAG: ${{ github.ref_name }}-${{ github.sha }}
       AZURE_REGISTRY: ${{ secrets.AZURE_REGISTRY }}
 
       SERVER_IMAGE: ${{ secrets.SERVER_IMAGE }}
