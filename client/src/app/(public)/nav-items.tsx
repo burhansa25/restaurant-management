@@ -27,7 +27,7 @@ interface menuType {
 
 const menuItems: menuType[] = [
   {
-    title: 'Trang chủ',
+    title: 'Home',
     href: '/',
   },
   {
@@ -36,17 +36,17 @@ const menuItems: menuType[] = [
     role: [Role.Guest],
   },
   {
-    title: 'Đơn hàng',
+    title: 'Orders',
     href: '/guest/orders',
     role: [Role.Guest],
   },
   {
-    title: 'Đăng nhập',
+    title: 'Login',
     href: '/login',
     hideWhenLogin: true,
   },
   {
-    title: 'Quản lý',
+    title: 'Dashboard',
     href: '/manage/dashboard',
     role: [Role.Owner, Role.Employee],
   },
@@ -90,11 +90,11 @@ export default function NavItems({ className }: { className?: string }) {
       {role && (
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <div className={cn(className, 'cursor-pointer')}>Đăng xuất</div>
+            <div className={cn(className, 'cursor-pointer')}>Logout</div>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Bạn có muốn đăng xuất ?</AlertDialogTitle>
+              <AlertDialogTitle>Are you sure want to log out?</AlertDialogTitle>
               <AlertDialogDescription>
                 Việc đăng xuất có thể làm mất đi hóa đơn hiện tại của bạn nếu chưa được thanh toán.
               </AlertDialogDescription>
