@@ -133,3 +133,92 @@ jobs:
           app-name: ${{ env.CLIENT_APP_NAME }}
           publish-profile: ${{ env.CLIENT_PUBLISH_PROFILE }}
           images: ${{ env.AZURE_REGISTRY }}/${{ env.CLIENT_IMAGE }}:${{ env.IMAGE_TAG }}
+          
+  notify-discord:
+    name: Notify Discord Deployment Success
+    runs-on: ubuntu-latest
+    needs: continuous-deployment
+    if: ${{ needs.continuous-deployment.result == 'success' }}
+
+    env:
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      BRANCH_NAME: ${{ github.ref_name }}
+      REPO_NAME: ${{ github.repository }}
+      COMMIT_SHA: ${{ github.sha }}
+      COMMIT_MESSAGE: ${{ github.event.head_commit.message || 'Manual workflow dispatch' }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      IMAGE_TAG: ${{ github.ref_name }}-${{ github.sha }}
+
+    steps:
+      - name: Send success notification to Discord
+        run: |
+          if [ "$BRANCH_NAME" = "playout" ]; then
+            ENVIRONMENT="PRODUCTION"
+          else
+            ENVIRONMENT="STAGING"
+          fi
+
+          SHORT_SHA=$(echo "$COMMIT_SHA" | cut -c1-7)
+
+          payload=$(jq -n \
+            --arg title "✅ Deployment Success" \
+            --arg environment "$ENVIRONMENT" \
+            --arg repo "$REPO_NAME" \
+            --arg branch "$BRANCH_NAME" \
+            --arg commit "$SHORT_SHA" \
+            --arg image_tag "$IMAGE_TAG" \
+            --arg message "$COMMIT_MESSAGE" \
+            --arg run_url "$RUN_URL" \
+            '{
+              username: "GitHub Actions",
+              content: "✅ Deployment berhasil!",
+              embeds: [
+                {
+                  title: $title,
+                  color: 3066993,
+                  fields: [
+                    {
+                      name: "Environment",
+                      value: $environment,
+                      inline: true
+                    },
+                    {
+                      name: "Branch",
+                      value: $branch,
+                      inline: true
+                    },
+                    {
+                      name: "Repository",
+                      value: $repo,
+                      inline: false
+                    },
+                    {
+                      name: "Commit",
+                      value: $commit,
+                      inline: true
+                    },
+                    {
+                      name: "Image Tag",
+                      value: $image_tag,
+                      inline: false
+                    },
+                    {
+                      name: "Commit Message",
+                      value: $message,
+                      inline: false
+                    },
+                    {
+                      name: "Workflow Run",
+                      value: $run_url,
+                      inline: false
+                    }
+                  ]
+                }
+              ]
+            }')
+
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d "$payload" \
+            "$DISCORD_WEBHOOK_URL"
+        
