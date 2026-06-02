@@ -7,7 +7,7 @@ export default async function Dashboard() {
         <Card x-chunk='dashboard-06-chunk-0'>
           <CardHeader>
             <CardTitle>Dashboard</CardTitle>
-            <CardDescription>Analisis metrik</CardDescription>
+            <CardDescription>Metric Analytics</CardDescription>
           </CardHeader>
           <CardContent>
             <DashboardMain />
