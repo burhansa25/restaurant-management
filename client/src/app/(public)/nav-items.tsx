@@ -90,7 +90,7 @@ export default function NavItems({ className }: { className?: string }) {
       {role && (
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <div className={cn(className, 'cursor-pointer')}>Đăng xuất</div>
+            <div className={cn(className, 'cursor-pointer')}>Logout</div>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
