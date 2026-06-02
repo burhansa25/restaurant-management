@@ -7,7 +7,7 @@ export default async function Dashboard() {
         <Card x-chunk='dashboard-06-chunk-0'>
           <CardHeader>
             <CardTitle>Dashboard</CardTitle>
-            <CardDescription>Phân tích các chỉ số</CardDescription>
+            <CardDescription>Analisis metrik</CardDescription>
           </CardHeader>
           <CardContent>
             <DashboardMain />
