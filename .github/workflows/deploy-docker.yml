@@ -63,7 +63,7 @@ jobs:
     needs: continuous-integration
 
     env:
-      IMAGE_TAG: ${{ github.ref_name == 'playout' && 'latest' || 'staging' }}
+      IMAGE_TAG: ${{ github.ref_name }}-${{ github.sha }}
 
       AZURE_REGISTRY: ${{ secrets.AZURE_REGISTRY }}
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
