@@ -94,7 +94,7 @@ export default function NavItems({ className }: { className?: string }) {
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Bạn có muốn đăng xuất ?</AlertDialogTitle>
+              <AlertDialogTitle>Are you sure want to log out?</AlertDialogTitle>
               <AlertDialogDescription>
                 Việc đăng xuất có thể làm mất đi hóa đơn hiện tại của bạn nếu chưa được thanh toán.
               </AlertDialogDescription>
