@@ -27,7 +27,7 @@ interface menuType {
 
 const menuItems: menuType[] = [
   {
-    title: 'Trang chủ',
+    title: 'Home',
     href: '/',
   },
   {
@@ -36,17 +36,17 @@ const menuItems: menuType[] = [
     role: [Role.Guest],
   },
   {
-    title: 'Đơn hàng',
+    title: 'Orders',
     href: '/guest/orders',
     role: [Role.Guest],
   },
   {
-    title: 'Đăng nhập',
+    title: 'Login',
     href: '/login',
     hideWhenLogin: true,
   },
   {
-    title: 'Quản lý',
+    title: 'Dashboard',
     href: '/manage/dashboard',
     role: [Role.Owner, Role.Employee],
   },
