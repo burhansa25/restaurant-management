@@ -1,5 +1,9 @@
 name: Deploy Restaurant Management Infrastructure
 
+concurrency:
+  group: restaurant-management-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
@@ -29,8 +33,43 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install Server Dependencies
+        working-directory: ./server
+        run: npm ci
+
+      - name: Install Client Dependencies
+        working-directory: ./client
+        run: npm ci
+
+      - name: Prisma Validate
+        run: |
+          cd server
+          npx prisma validate
+
+      - name: TypeScript Check
+        run: |
+          cd server
+          npx tsc --noEmit
+
+      - name: Lint Server
+        working-directory: ./server
+        run: npm run lint
+
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      - name: Build Server
+        working-directory: ./server
+        run: npm run build
+
+      - name: Build Client
+        working-directory: ./client
+        run: npm run build
 
       - name: Validate backend Docker build
         uses: docker/build-push-action@v5
@@ -102,6 +141,10 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./server
+
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
           push: true
           build-args: |
             DATABASE_URL=${{ env.DATABASE_URL }}
@@ -112,6 +155,10 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./client
+
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
           push: true
           build-args: |
             NEXT_PUBLIC_API_ENDPOINT=${{ env.NEXT_PUBLIC_API_ENDPOINT }}
@@ -133,6 +180,18 @@ jobs:
           app-name: ${{ env.CLIENT_APP_NAME }}
           publish-profile: ${{ env.CLIENT_PUBLISH_PROFILE }}
           images: ${{ env.AZURE_REGISTRY }}/${{ env.CLIENT_IMAGE }}:${{ env.IMAGE_TAG }}
+
+      - name: Wait for deployment
+        run: sleep 60
+
+      - name: Health Check Backend
+        run: |
+          curl -f https://${{ env.SERVER_APP_NAME }}.azurewebsites.net/health
+
+      - name: Health Check Frontend
+        run: |
+          curl -f https://${{ env.CLIENT_APP_NAME }}.azurewebsites.net
+          
           
   notify-discord:
     name: Notify Discord Deployment Success
@@ -221,4 +280,88 @@ jobs:
             -H "Content-Type: application/json" \
             -d "$payload" \
             "$DISCORD_WEBHOOK_URL"
-        
+
+  notify-discord-failed:
+  name: Notify Discord Deployment Failed
+  runs-on: ubuntu-latest
+
+  needs:
+    - continuous-integration
+    - continuous-deployment
+
+  if: ${{ always() && (needs.continuous-integration.result == 'failure' || needs.continuous-deployment.result == 'failure') }}
+
+  env:
+    DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+    BRANCH_NAME: ${{ github.ref_name }}
+    REPO_NAME: ${{ github.repository }}
+    COMMIT_SHA: ${{ github.sha }}
+    COMMIT_MESSAGE: ${{ github.event.head_commit.message || 'Manual workflow dispatch' }}
+    RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+  steps:
+    - name: Send Failed Notification
+      run: |
+        if [ "$BRANCH_NAME" = "playout" ]; then
+          ENVIRONMENT="PRODUCTION"
+        else
+          ENVIRONMENT="STAGING"
+        fi
+
+        SHORT_SHA=$(echo "$COMMIT_SHA" | cut -c1-7)
+
+        payload=$(jq -n \
+          --arg title "❌ Deployment Failed" \
+          --arg environment "$ENVIRONMENT" \
+          --arg repo "$REPO_NAME" \
+          --arg branch "$BRANCH_NAME" \
+          --arg commit "$SHORT_SHA" \
+          --arg message "$COMMIT_MESSAGE" \
+          --arg run_url "$RUN_URL" \
+          '{
+            username: "GitHub Actions",
+            content: "❌ Deployment gagal!",
+            embeds: [
+              {
+                title: $title,
+                color: 15158332,
+                fields: [
+                  {
+                    name: "Environment",
+                    value: $environment,
+                    inline: true
+                  },
+                  {
+                    name: "Branch",
+                    value: $branch,
+                    inline: true
+                  },
+                  {
+                    name: "Repository",
+                    value: $repo,
+                    inline: false
+                  },
+                  {
+                    name: "Commit",
+                    value: $commit,
+                    inline: true
+                  },
+                  {
+                    name: "Commit Message",
+                    value: $message,
+                    inline: false
+                  },
+                  {
+                    name: "Workflow Run",
+                    value: $run_url,
+                    inline: false
+                  }
+                ]
+              }
+            ]
+          }')
+
+        curl -X POST \
+          -H "Content-Type: application/json" \
+          -d "$payload" \
+          "$DISCORD_WEBHOOK_URL"
