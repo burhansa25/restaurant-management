@@ -32,7 +32,10 @@ const configSchema = z.object({
   GOOGLE_CLIENT_ID: z.string().optional().default(''),
   GOOGLE_CLIENT_SECRET: z.string().optional().default(''),
   GOOGLE_AUTHORIZED_REDIRECT_URI: z.string().optional().default(''),
-  PRODUCTION: z.enum(['true', 'false']).default('false').transform((val) => val === 'true'),
+  PRODUCTION: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((val) => val === 'true'),
   PRODUCTION_URL: z.string().default('http://localhost:4000'),
   SERVER_TIMEZONE: z.string().default('Asia/Jakarta')
 })
