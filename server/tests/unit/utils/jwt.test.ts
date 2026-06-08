@@ -37,4 +37,24 @@ describe('jwt utils', () => {
   it('should throw on invalid refresh token', () => {
     expect(() => verifyRefreshToken('invalid-token')).toThrow()
   })
+
+  it('should sign token with custom exp', () => {
+    const token = signAccessToken({
+      userId: 1,
+      role: Role.Owner,
+      exp: Math.floor(Date.now() / 1000) + 60
+    })
+
+    expect(token).toBeDefined()
+  })
+
+  it('should sign refresh token with custom exp', () => {
+    const token = signRefreshToken({
+      userId: 1,
+      role: Role.Owner,
+      exp: Math.floor(Date.now() / 1000) + 60
+    })
+
+    expect(token).toBeDefined()
+  })
 })

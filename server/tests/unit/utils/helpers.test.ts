@@ -29,4 +29,18 @@ describe('Helpers Utility', () => {
 
     expect(fs.existsSync(testFolder)).toBe(true)
   })
+
+  it('should not create folder if already exists', () => {
+    const existsSpy = jest.spyOn(fs, 'existsSync')
+    const mkdirSpy = jest.spyOn(fs, 'mkdirSync')
+
+    existsSpy.mockReturnValue(true)
+
+    createFolder('uploads')
+
+    expect(mkdirSpy).not.toHaveBeenCalled()
+
+    existsSpy.mockRestore()
+    mkdirSpy.mockRestore()
+  })
 })
