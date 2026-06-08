@@ -1,3 +1,4 @@
+import { Role } from '@/constants/type'
 import {
   signAccessToken,
   signRefreshToken,
@@ -5,10 +6,10 @@ import {
   verifyRefreshToken
 } from '@/utils/jwt'
 
-describe('JWT Utility', () => {
+describe('jwt utils', () => {
   const payload = {
     userId: 1,
-    role: 'OWNER'
+    role: Role.Owner as const
   }
 
   it('should sign and verify access token', () => {
@@ -16,8 +17,8 @@ describe('JWT Utility', () => {
 
     const decoded = verifyAccessToken(token)
 
-    expect(decoded.userId).toBe(payload.userId)
-    expect(decoded.role).toBe(payload.role)
+    expect(decoded.userId).toBe(1)
+    expect(decoded.role).toBe(Role.Owner)
   })
 
   it('should sign and verify refresh token', () => {
@@ -25,14 +26,15 @@ describe('JWT Utility', () => {
 
     const decoded = verifyRefreshToken(token)
 
-    expect(decoded.userId).toBe(payload.userId)
-    expect(decoded.role).toBe(payload.role)
+    expect(decoded.userId).toBe(1)
+    expect(decoded.role).toBe(Role.Owner)
   })
 
-  it('should generate different tokens', () => {
-    const accessToken = signAccessToken(payload)
-    const refreshToken = signRefreshToken(payload)
+  it('should throw on invalid access token', () => {
+    expect(() => verifyAccessToken('invalid-token')).toThrow()
+  })
 
-    expect(accessToken).not.toBe(refreshToken)
+  it('should throw on invalid refresh token', () => {
+    expect(() => verifyRefreshToken('invalid-token')).toThrow()
   })
 })
