@@ -165,11 +165,7 @@ jobs:
       - name: Build and push backend image
         uses: docker/build-push-action@v5
         with:
-          builder: ${{ steps.buildx.outputs.name }}
           context: ./server
-
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
           push: true
           build-args: |
@@ -185,11 +181,7 @@ jobs:
       - name: Build and push frontend image
         uses: docker/build-push-action@v5
         with:
-          builder: ${{ steps.buildx.outputs.name }}
           context: ./client
-
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
           push: true
           build-args: |
