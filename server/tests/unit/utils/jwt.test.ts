@@ -1,3 +1,4 @@
+import { Role } from '@/constants/type'
 import {
   signAccessToken,
   signRefreshToken,
@@ -8,12 +9,11 @@ import {
 describe('JWT Utility', () => {
   const payload = {
     userId: 1,
-    role: 'OWNER'
+    role: Role.Owner
   }
 
   it('should sign and verify access token', () => {
     const token = signAccessToken(payload)
-
     const decoded = verifyAccessToken(token)
 
     expect(decoded.userId).toBe(payload.userId)
@@ -22,7 +22,6 @@ describe('JWT Utility', () => {
 
   it('should sign and verify refresh token', () => {
     const token = signRefreshToken(payload)
-
     const decoded = verifyRefreshToken(token)
 
     expect(decoded.userId).toBe(payload.userId)
