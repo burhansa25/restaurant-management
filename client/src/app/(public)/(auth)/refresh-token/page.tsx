@@ -11,7 +11,7 @@ function RefreshToken() {
   const redirectPathName = searchParams.get('redirect')
 
   useEffect(() => {
-    // từ middleware đẩy qua
+    // Validating token passed from the middleware redirect
     if (refreshTokenFromURL && refreshTokenFromURL === getRefreshTokenFromLocalStorage()) {
       checkAndRefreshToken({
         onSuccess: () => {
@@ -19,17 +19,17 @@ function RefreshToken() {
         },
       })
     } else {
-      // trường hợp hi hữu là token khi refreshToken không hợp lệ hoặc không khớp -> tránh dừng lại ở page này
+      // Fallback redirect if the token is invalid or mismatched to prevent the application from hanging
       router.push('/')
     }
   }, [refreshTokenFromURL, router, redirectPathName])
 
-  return <div>Refresh token...</div>
+  return <div>Authenticating session...</div>
 }
 
 export default function RefreshTokenPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div>Loading, please wait...</div>}>
       <RefreshToken />
     </Suspense>
   )

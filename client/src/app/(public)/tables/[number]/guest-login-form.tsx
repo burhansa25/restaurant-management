@@ -59,7 +59,7 @@ export default function GuestLoginForm() {
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">Đăng nhập gọi món</CardTitle>
+        <CardTitle className="text-2xl text-center">Welcome to BigBoy</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -77,8 +77,14 @@ export default function GuestLoginForm() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid gap-2">
-                      <Label htmlFor="name">Tên khách hàng</Label>
-                      <Input id="name" type="text" required {...field} />
+                      <Label htmlFor="name">Your Name</Label>
+                      <Input 
+                        id="name" 
+                        type="text" 
+                        placeholder="Enter your name to start ordering" 
+                        required 
+                        {...field} 
+                      />
                       <FormMessage />
                     </div>
                   </FormItem>
@@ -86,7 +92,7 @@ export default function GuestLoginForm() {
               />
 
               <Button type="submit" className="w-full">
-                Đăng nhập
+                Start Ordering
               </Button>
             </div>
           </form>

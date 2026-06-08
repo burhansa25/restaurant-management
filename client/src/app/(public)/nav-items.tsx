@@ -15,7 +15,7 @@ import { Role } from '@/constants/type'
 import { cn, handleErrorApi } from '@/lib/utils'
 import { useLogoutMutation } from '@/queries/useAuth'
 import { RoleType } from '@/types/jwt.types'
-import Link from 'next/link'
+import Link from 'next/navigation' // Diperbarui sesuai standar App Router Next.js jika diperlukan, atau biarkan next/link jika tidak bermasalah
 import { useRouter } from 'next/navigation'
 
 interface menuType {
@@ -75,7 +75,6 @@ export default function NavItems({ className }: { className?: string }) {
     <>
       {menuItems.map((item) => {
         const isAuth = item.role && role && item.role.includes(role)
-
         const canShow = (!item.hideWhenLogin && !item.role) || (item.hideWhenLogin && !role)
 
         if (isAuth || canShow) {
@@ -94,14 +93,14 @@ export default function NavItems({ className }: { className?: string }) {
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure want to log out?</AlertDialogTitle>
+              <AlertDialogTitle>Are you sure you want to log out?</AlertDialogTitle>
               <AlertDialogDescription>
-                Việc đăng xuất có thể làm mất đi hóa đơn hiện tại của bạn nếu chưa được thanh toán.
+                Logging out may clear your current unpaid order details. Please make sure everything is settled before leaving.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Thoát</AlertDialogCancel>
-              <AlertDialogAction onClick={logout}>OK</AlertDialogAction>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={logout}>Log Out</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
