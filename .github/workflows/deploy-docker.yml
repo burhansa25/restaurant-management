@@ -150,6 +150,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Docker Buildx
+        id: buildx
         uses: docker/setup-buildx-action@v3
         with:
           driver: docker-container
@@ -164,6 +165,7 @@ jobs:
       - name: Build and push backend image
         uses: docker/build-push-action@v5
         with:
+          builder: ${{ steps.buildx.outputs.name }}
           context: ./server
 
           cache-from: type=gha
@@ -183,6 +185,7 @@ jobs:
       - name: Build and push frontend image
         uses: docker/build-push-action@v5
         with:
+          builder: ${{ steps.buildx.outputs.name }}
           context: ./client
 
           cache-from: type=gha
