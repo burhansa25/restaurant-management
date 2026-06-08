@@ -9,7 +9,7 @@ import {
 describe('jwt utils', () => {
   const payload = {
     userId: 1,
-    role: Role.Owner as const
+    role: Role.Owner
   }
 
   it('should sign and verify access token', () => {

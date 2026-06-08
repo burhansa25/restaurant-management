@@ -12,6 +12,9 @@ const config: Config = {
 
   coverageThreshold: {
     global: {
+      'ts-jest': {
+        isolatedModules: true
+      },
       branches: 50,
       functions: 50,
       lines: 50,
