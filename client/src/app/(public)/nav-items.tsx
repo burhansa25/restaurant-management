@@ -15,7 +15,7 @@ import { Role } from '@/constants/type'
 import { cn, handleErrorApi } from '@/lib/utils'
 import { useLogoutMutation } from '@/queries/useAuth'
 import { RoleType } from '@/types/jwt.types'
-import Link from 'next/navigation' // Diperbarui sesuai standar App Router Next.js jika diperlukan, atau biarkan next/link jika tidak bermasalah
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 interface menuType {
