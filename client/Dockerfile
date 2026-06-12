@@ -3,7 +3,7 @@ FROM node:24-bookworm-slim AS deps
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --omit=dev --network-timeout=100000
+RUN npm ci --network-timeout=100000
 
 
 FROM node:24-bookworm-slim AS builder
