@@ -10,6 +10,9 @@ FROM node:24-bookworm-slim AS builder
 
 WORKDIR /app
 
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
 ARG NEXT_PUBLIC_API_ENDPOINT
 ARG NEXT_PUBLIC_URL
 ARG DOCKER_PUBLIC_API_ENDPOINT
@@ -19,9 +22,7 @@ ENV NEXT_PUBLIC_API_ENDPOINT=$NEXT_PUBLIC_API_ENDPOINT
 ENV NEXT_PUBLIC_URL=$NEXT_PUBLIC_URL
 ENV DOCKER_PUBLIC_API_ENDPOINT=$DOCKER_PUBLIC_API_ENDPOINT
 
-COPY package*.json ./
-COPY . .
-RUN npm ci && npm run build
+RUN npm run build
 
 
 FROM node:24-bookworm-slim AS runner
@@ -31,13 +32,11 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
-COPY package*.json ./
-COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.ts ./next.config.ts
-
-RUN npm ci --omit=dev --network-timeout=100000
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 
 EXPOSE 3000
 

@@ -77,7 +77,6 @@ export default function MenuOrder() {
                 height={100}
                 width={100}
                 quality={100}
-                unoptimized
                 className="object-cover w-[80px] h-[80px] rounded-md"
               />
             </div>

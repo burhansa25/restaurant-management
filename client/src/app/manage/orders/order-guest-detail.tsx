@@ -80,7 +80,6 @@ export default function OrderGuestDetail({
                 title={order.dishSnapshot.name}
                 width={30}
                 height={30}
-                unoptimized
                 className="h-[30px] w-[30px] rounded object-cover"
               />
               <span className="truncate w-[70px] sm:w-[100px]" title={order.dishSnapshot.name}>

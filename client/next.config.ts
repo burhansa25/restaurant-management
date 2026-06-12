@@ -28,6 +28,7 @@ if (process.env.NEXT_PUBLIC_API_ENDPOINT) {
 }
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
   images: {
     remotePatterns,
   },
