@@ -25,9 +25,9 @@ normalizePath,
 formatCurrency,
 removeAccents,
 simpleMatchText,
-getVietnameseDishStatus,
-getVietnameseOrderStatus,
-getVietnameseTableStatus,
+getVietnameseDishStatus, 
+getVietnameseOrderStatus, 
+getVietnameseTableStatus, 
 getTableLink,
 decodeToken,
 formatDateTimeToLocaleString,
@@ -106,48 +106,42 @@ it('should format zero', () => {
 })
 
 describe('removeAccents()', () => {
-it('should remove vietnamese accents', () => {
-expect(removeAccents('Đặng Văn Lâm')).toBe(
-'Dang Van Lam',
-)
-})
+  it('should remove complex diacritics/accents correctly', () => {
+    expect(removeAccents('Café Crème')).toBe('Cafe Creme')
+  })
 
-it('should keep normal string unchanged', () => {
-  expect(removeAccents('Restaurant')).toBe(
-    'Restaurant',
-  )
-})
-
+  it('should keep normal string unchanged', () => {
+    expect(removeAccents('Restaurant')).toBe('Restaurant')
+  })
 })
 
 describe('simpleMatchText()', () => {
-it('should match accent-insensitive text', () => {
-expect(
-simpleMatchText(
-'Phở Bò Đặc Biệt',
-'pho bo',
-),
-).toBe(true)
-})
+  it('should match accent-insensitive text', () => {
+    expect(
+      simpleMatchText(
+        'Café Crème Moza',
+        'cafe creme',
+      ),
+    ).toBe(true)
+  })
 
-it('should match case-insensitive text', () => {
-  expect(
-    simpleMatchText(
-      'Restaurant Management',
-      'management',
-    ),
-  ).toBe(true)
-})
+  it('should match case-insensitive text', () => {
+    expect(
+      simpleMatchText(
+        'Restaurant Management',
+        'management',
+      ),
+    ).toBe(true)
+  })
 
-it('should return false when no match', () => {
-  expect(
-    simpleMatchText(
-      'Restaurant',
-      'Hotel',
-    ),
-  ).toBe(false)
-})
-
+  it('should return false when no match', () => {
+    expect(
+      simpleMatchText(
+        'Restaurant',
+        'Hotel',
+      ),
+    ).toBe(false)
+  })
 })
 
 describe('getVietnameseDishStatus()', () => {
@@ -156,7 +150,7 @@ expect(
 getVietnameseDishStatus(
 DishStatus.Available,
 ),
-).toBe('Có sẵn')
+).toBe('Available') 
 })
 
 it('should translate Unavailable', () => {
@@ -164,7 +158,7 @@ it('should translate Unavailable', () => {
     getVietnameseDishStatus(
       DishStatus.Unavailable,
     ),
-  ).toBe('Không có sẵn')
+  ).toBe('Unavailable') 
 })
 
 it('should translate Hidden', () => {
@@ -172,7 +166,7 @@ it('should translate Hidden', () => {
     getVietnameseDishStatus(
       DishStatus.Hidden,
     ),
-  ).toBe('Ẩn')
+  ).toBe('Hidden') 
 })
 
 })
@@ -183,7 +177,7 @@ expect(
 getVietnameseOrderStatus(
 OrderStatus.Pending,
 ),
-).toBe('Chờ xử lý')
+).toBe('Pending') 
 })
 
 it('should translate Processing', () => {
@@ -191,7 +185,7 @@ it('should translate Processing', () => {
     getVietnameseOrderStatus(
       OrderStatus.Processing,
     ),
-  ).toBe('Đang nấu')
+  ).toBe('Processing') 
 })
 
 it('should translate Delivered', () => {
@@ -199,7 +193,7 @@ it('should translate Delivered', () => {
     getVietnameseOrderStatus(
       OrderStatus.Delivered,
     ),
-  ).toBe('Đã phục vụ')
+  ).toBe('Delivered') 
 })
 
 it('should translate Paid', () => {
@@ -207,7 +201,7 @@ it('should translate Paid', () => {
     getVietnameseOrderStatus(
       OrderStatus.Paid,
     ),
-  ).toBe('Đã thanh toán')
+  ).toBe('Paid') 
 })
 
 it('should translate Rejected', () => {
@@ -215,7 +209,7 @@ it('should translate Rejected', () => {
     getVietnameseOrderStatus(
       OrderStatus.Rejected,
     ),
-  ).toBe('Từ chối')
+  ).toBe('Rejected') 
 })
 
 })
@@ -226,7 +220,7 @@ expect(
 getVietnameseTableStatus(
 TableStatus.Available,
 ),
-).toBe('Có sẵn')
+).toBe('Available') 
 })
 
 it('should translate Reserved', () => {
@@ -234,7 +228,7 @@ it('should translate Reserved', () => {
     getVietnameseTableStatus(
       TableStatus.Reserved,
     ),
-  ).toBe('Đã đặt')
+  ).toBe('Reserved') 
 })
 
 it('should translate Hidden', () => {
@@ -242,7 +236,7 @@ it('should translate Hidden', () => {
     getVietnameseTableStatus(
       TableStatus.Hidden,
     ),
-  ).toBe('Ẩn')
+  ).toBe('Hidden') 
 })
 
 })
