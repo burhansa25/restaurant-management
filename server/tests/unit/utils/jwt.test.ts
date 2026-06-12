@@ -1,10 +1,5 @@
 import { Role } from '@/constants/type'
-import {
-  signAccessToken,
-  signRefreshToken,
-  verifyAccessToken,
-  verifyRefreshToken
-} from '@/utils/jwt'
+import { signAccessToken, signRefreshToken, verifyAccessToken, verifyRefreshToken } from '@/utils/jwt'
 
 describe('jwt utils', () => {
   const payload = {

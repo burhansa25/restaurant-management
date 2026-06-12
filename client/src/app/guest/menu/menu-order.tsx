@@ -22,14 +22,14 @@ export default function MenuOrder() {
     setOrders((prev) => {
       if (quantity === 0) {
         return prev.filter((item) => item.dishId !== dishId)
-        // lấy tất cả các item mà khác dishId
+        // remove all items except this dishId
       }
       const index = prev.findIndex((item) => item.dishId === dishId)
       if (index === -1) {
-        // chưa có món này trong giỏ hàng
+        // dish not yet in cart
         return [...prev, { dishId, quantity }]
       }
-      // đã có món này trong giỏ hàng
+      // dish already in cart
       const newOrders = [...prev]
       newOrders[index].quantity = quantity
       return newOrders
@@ -58,7 +58,7 @@ export default function MenuOrder() {
   console.log(orders)
   return (
     <>
-      <h1 className="text-center text-xl font-bold">🍕 Menu quán</h1>
+      <h1 className="text-center text-xl font-bold">🍕 Our Menu</h1>
       {dishes
         .filter((dish) => dish.status !== DishStatus.Hidden)
         .map((dish) => (
@@ -68,7 +68,7 @@ export default function MenuOrder() {
           >
             <div className="flex-shrink-0 relative">
               {dish.status === DishStatus.Unavailable && (
-                <span className="absolute inset-0 flex items-center justify-center text-sm">Hết hàng</span>
+                <span className="absolute inset-0 flex items-center justify-center text-sm">Sold Out</span>
               )}
 
               <Image
@@ -96,7 +96,7 @@ export default function MenuOrder() {
         ))}
       <div className="sticky bottom-0">
         <Button className="w-full justify-between" onClick={handleOrder} disabled={orders.length === 0}>
-          <span>Đặt hàng · {orders.length} món</span>
+          <span>Order · {orders.length} item(s)</span>
           <span>{formatCurrency(totalPrice)}</span>
         </Button>
       </div>

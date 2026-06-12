@@ -88,7 +88,7 @@ export default function EditTable({
         }}
       >
         <DialogHeader>
-          <DialogTitle>Cập nhật bàn ăn</DialogTitle>
+          <DialogTitle>Update Table</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
@@ -100,7 +100,7 @@ export default function EditTable({
             <div className="grid gap-4 py-4">
               <FormItem>
                 <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                  <Label htmlFor="name">Số hiệu bàn</Label>
+                  <Label htmlFor="name">Table Number</Label>
                   <div className="col-span-3 w-full space-y-2">
                     <Input
                       id="number"
@@ -119,7 +119,7 @@ export default function EditTable({
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="price">Sức chứa (người)</Label>
+                      <Label htmlFor="price">Capacity (people)</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Input id="capacity" className="w-full" {...field} type="number" />
                         <FormMessage />
@@ -134,12 +134,12 @@ export default function EditTable({
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="description">Trạng thái</Label>
+                      <Label htmlFor="description">Status</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Chọn trạng thái" />
+                              <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -163,7 +163,7 @@ export default function EditTable({
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="price">Đổi QR Code</Label>
+                      <Label htmlFor="price">Change QR Code</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <div className="flex items-center space-x-2">
                           <Switch id="changeToken" checked={field.value} onCheckedChange={field.onChange} />
@@ -185,7 +185,7 @@ export default function EditTable({
               </FormItem>
               <FormItem>
                 <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                  <Label>URL gọi món</Label>
+                  <Label>Order URL</Label>
                   <div className="col-span-3 w-full space-y-2">
                     {data && (
                       <Link
@@ -210,7 +210,7 @@ export default function EditTable({
         </Form>
         <DialogFooter>
           <Button type="submit" form="edit-table-form">
-            Lưu
+            Save
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -119,8 +119,8 @@ export default function EditDish({
     >
       <DialogContent className="sm:max-w-[600px] max-h-screen overflow-auto">
         <DialogHeader>
-          <DialogTitle>Cập nhật món ăn</DialogTitle>
-          <DialogDescription>Các trường sau đây là bắ buộc: Tên, ảnh</DialogDescription>
+          <DialogTitle>Edit Dish</DialogTitle>
+          <DialogDescription>The following fields are required: name and image.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form
@@ -172,7 +172,7 @@ export default function EditDish({
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="name">Tên món ăn</Label>
+                      <Label htmlFor="name">Dish Name</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Input id="name" className="w-full" {...field} />
                         <FormMessage />
@@ -187,7 +187,7 @@ export default function EditDish({
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="price">Giá</Label>
+                      <Label htmlFor="price">Price</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Input id="price" className="w-full" {...field} type="number" />
                         <FormMessage />
@@ -202,7 +202,7 @@ export default function EditDish({
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="description">Mô tả sản phẩm</Label>
+                      <Label htmlFor="description">Description</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Textarea id="description" className="w-full" {...field} />
                         <FormMessage />
@@ -217,12 +217,12 @@ export default function EditDish({
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="description">Trạng thái</Label>
+                      <Label htmlFor="description">Status</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Chọn trạng thái" />
+                              <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -245,7 +245,7 @@ export default function EditDish({
         </Form>
         <DialogFooter>
           <Button type="submit" form="edit-dish-form">
-            Lưu
+            Save
           </Button>
         </DialogFooter>
       </DialogContent>

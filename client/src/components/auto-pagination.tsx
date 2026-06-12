@@ -19,7 +19,7 @@ interface Props {
 }
 
 /**
-Với range = 2 áp dụng cho khoảng cách đầu, cuối và xung quanh current_page
+With range = 2 applied for distance at start, end, and around current_page
 
 [1] 2 3 ... 19 20
 1 [2] 3 4 ... 19 20 
@@ -77,7 +77,7 @@ export default function AutoPagination({
       .map((_, index) => {
         const pageNumber = index + 1
 
-        // Điều kiện để return về ...
+        // Condition to return ...
         if (page <= RANGE * 2 + 1 && pageNumber > page + RANGE && pageNumber < pageSize - RANGE + 1) {
           return renderDotAfter(index)
         } else if (page > RANGE * 2 + 1 && page < pageSize - RANGE * 2) {

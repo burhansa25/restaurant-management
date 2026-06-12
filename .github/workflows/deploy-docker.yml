@@ -64,11 +64,6 @@ jobs:
         working-directory: ./client
         run: npm run lint
 
-      - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker-container
-
       - name: Inspect Builder
         run: docker buildx ls
 
@@ -79,36 +74,6 @@ jobs:
       - name: Build Client
         working-directory: ./client
         run: npm run build
-
-      - name: Validate backend Docker build
-        uses: docker/build-push-action@v5
-        with:
-          context: ./server
-
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-          push: false
-          build-args: |
-            DATABASE_URL=${{ env.DATABASE_URL }}
-          tags: |
-            ${{ env.AZURE_REGISTRY }}/${{ env.SERVER_IMAGE }}:${{ env.IMAGE_TAG }}
-
-      - name: Validate frontend Docker build
-        uses: docker/build-push-action@v5
-        with:
-          context: ./client
-
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-          push: false
-          build-args: |
-            NEXT_PUBLIC_API_ENDPOINT=${{ env.NEXT_PUBLIC_API_ENDPOINT }}
-            NEXT_PUBLIC_URL=${{ env.NEXT_PUBLIC_URL }}
-            DOCKER_PUBLIC_API_ENDPOINT=${{ env.DOCKER_PUBLIC_API_ENDPOINT }}
-          tags: |
-            ${{ env.AZURE_REGISTRY }}/${{ env.CLIENT_IMAGE }}:${{ env.IMAGE_TAG }}
 
       - name: Run Backend Tests
         working-directory: ./server
@@ -268,7 +233,7 @@ jobs:
           SHORT_SHA=$(echo "$COMMIT_SHA" | cut -c1-7)
 
           payload=$(jq -n \
-            --arg title "#TITLE" \
+            --arg title "$TITLE" \
             --arg status "$STATUS_MESSAGE" \
             --arg environment "$ENVIRONMENT" \
             --arg repo "$REPO_NAME" \

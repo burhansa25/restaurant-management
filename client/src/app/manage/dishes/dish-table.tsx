@@ -68,7 +68,7 @@ export const columns: ColumnDef<DishItem>[] = [
   },
   {
     accessorKey: 'image',
-    header: 'Ảnh',
+    header: 'Image',
     cell: ({ row }) => (
       <div>
         <Avatar className="aspect-square w-[100px] h-[100px] rounded-md object-cover">
@@ -80,17 +80,17 @@ export const columns: ColumnDef<DishItem>[] = [
   },
   {
     accessorKey: 'name',
-    header: 'Tên',
+    header: 'Name',
     cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
   },
   {
     accessorKey: 'price',
-    header: 'Giá cả',
+    header: 'Price',
     cell: ({ row }) => <div className="capitalize">{formatCurrency(row.getValue('price'))}</div>,
   },
   {
     accessorKey: 'description',
-    header: 'Mô tả',
+    header: 'Description',
     cell: ({ row }) => (
       <div
         dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(row.getValue('description')) }}
@@ -100,7 +100,7 @@ export const columns: ColumnDef<DishItem>[] = [
   },
   {
     accessorKey: 'status',
-    header: 'Trạng thái',
+    header: 'Status',
     cell: ({ row }) => <div>{getVietnameseDishStatus(row.getValue('status'))}</div>,
   },
   {
@@ -126,8 +126,8 @@ export const columns: ColumnDef<DishItem>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={openEditDish}>Sửa</DropdownMenuItem>
-            <DropdownMenuItem onClick={openDeleteDish}>Xóa</DropdownMenuItem>
+            <DropdownMenuItem onClick={openEditDish}>Edit</DropdownMenuItem>
+            <DropdownMenuItem onClick={openDeleteDish}>Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
@@ -171,10 +171,10 @@ function AlertDialogDeleteDish({
     >
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Xóa món ăn?</AlertDialogTitle>
+          <AlertDialogTitle>Delete dish?</AlertDialogTitle>
           <AlertDialogDescription>
-            Món <span className="bg-foreground text-primary-foreground rounded px-1">{dishDelete?.name}</span> sẽ bị xóa
-            vĩnh viễn
+            Dish <span className="bg-foreground text-primary-foreground rounded px-1">{dishDelete?.name}</span> will be
+            permanently deleted
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -185,7 +185,7 @@ function AlertDialogDeleteDish({
     </AlertDialog>
   )
 }
-// Số lượng item trên 1 trang
+// Number of items per page
 const PAGE_SIZE = 10
 export default function DishTable() {
   const searchParam = useSearchParams()
@@ -202,8 +202,8 @@ export default function DishTable() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
   const [pagination, setPagination] = useState({
-    pageIndex, // Gía trị mặc định ban đầu, không có ý nghĩa khi data được fetch bất đồng bộ
-    pageSize: PAGE_SIZE, //default page size
+    pageIndex, // Initial default value, not meaningful when data is fetched asynchronously
+    pageSize: PAGE_SIZE, // default page size
   })
 
   const table = useReactTable({
@@ -242,7 +242,7 @@ export default function DishTable() {
         <AlertDialogDeleteDish dishDelete={dishDelete} setDishDelete={setDishDelete} />
         <div className="flex items-center py-4">
           <Input
-            placeholder="Lọc tên"
+            placeholder="Filter by name"
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) => table.getColumn('name')?.setFilterValue(event.target.value)}
             className="max-w-sm"
@@ -287,8 +287,8 @@ export default function DishTable() {
         </div>
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="text-xs text-muted-foreground py-4 flex-1 ">
-            Hiển thị <strong>{table.getPaginationRowModel().rows.length}</strong> trong <strong>{data.length}</strong>{' '}
-            kết quả
+            Showing <strong>{table.getPaginationRowModel().rows.length}</strong> of <strong>{data.length}</strong>{' '}
+            results
           </div>
           <div>
             <AutoPagination
