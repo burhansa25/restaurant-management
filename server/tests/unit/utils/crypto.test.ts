@@ -11,10 +11,7 @@ describe('Crypto Utility', () => {
   it('should compare correct password', async () => {
     const hash = await hashPassword('admin123')
 
-    const result = await comparePassword(
-      'admin123',
-      hash
-    )
+    const result = await comparePassword('admin123', hash)
 
     expect(result).toBe(true)
   })
@@ -22,10 +19,7 @@ describe('Crypto Utility', () => {
   it('should reject wrong password', async () => {
     const hash = await hashPassword('admin123')
 
-    const result = await comparePassword(
-      'wrong-password',
-      hash
-    )
+    const result = await comparePassword('wrong-password', hash)
 
     expect(result).toBe(false)
   })
