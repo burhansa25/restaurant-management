@@ -229,7 +229,7 @@ jobs:
           SHORT_SHA=$(echo "$COMMIT_SHA" | cut -c1-7)
 
           payload=$(jq -n \
-            --arg title "#TITLE" \
+            --arg title "$TITLE" \
             --arg status "$STATUS_MESSAGE" \
             --arg environment "$ENVIRONMENT" \
             --arg repo "$REPO_NAME" \
