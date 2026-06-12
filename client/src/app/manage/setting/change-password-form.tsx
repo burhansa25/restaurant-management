@@ -41,7 +41,7 @@ export default function ChangePasswordForm() {
       <form noValidate className="grid auto-rows-max items-start gap-4 md:gap-8" onSubmit={form.handleSubmit(onSubmit)}>
         <Card className="overflow-hidden" x-chunk="dashboard-07-chunk-4">
           <CardHeader>
-            <CardTitle>Đổi mật khẩu</CardTitle>
+            <CardTitle>Change Password</CardTitle>
             {/* <CardDescription>Lipsum dolor sit amet, consectetur adipiscing elit</CardDescription> */}
           </CardHeader>
           <CardContent>
@@ -52,7 +52,7 @@ export default function ChangePasswordForm() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid gap-3">
-                      <Label htmlFor="oldPassword">Mật khẩu cũ</Label>
+                      <Label htmlFor="oldPassword">Current Password</Label>
                       <Input id="oldPassword" type="password" className="w-full" {...field} />
                       <FormMessage />
                     </div>
@@ -65,7 +65,7 @@ export default function ChangePasswordForm() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid gap-3">
-                      <Label htmlFor="password">Mật khẩu mới</Label>
+                      <Label htmlFor="password">New Password</Label>
                       <Input id="password" type="password" className="w-full" {...field} />
                       <FormMessage />
                     </div>
@@ -78,7 +78,7 @@ export default function ChangePasswordForm() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid gap-3">
-                      <Label htmlFor="confirmPassword">Nhập lại mật khẩu mới</Label>
+                      <Label htmlFor="confirmPassword">Confirm New Password</Label>
                       <Input id="confirmPassword" type="password" className="w-full" {...field} />
                       <FormMessage />
                     </div>
@@ -87,9 +87,9 @@ export default function ChangePasswordForm() {
               />
               <div className=" items-center gap-2 md:ml-auto flex">
                 <Button variant="outline" size="sm">
-                  Hủy
+                  Cancel
                 </Button>
-                <Button size="sm">Lưu thông tin</Button>
+                <Button size="sm">Save</Button>
               </div>
             </div>
           </CardContent>

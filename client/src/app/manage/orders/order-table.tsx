@@ -87,7 +87,7 @@ export default function OrderTable() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
   const [pagination, setPagination] = useState({
-    pageIndex, // Gía trị mặc định ban đầu, không có ý nghĩa khi data được fetch bất đồng bộ
+    pageIndex, // Default initial value, irrelevant when data is fetched asynchronously
     pageSize: PAGE_SIZE, //default page size
   })
 
@@ -161,7 +161,7 @@ export default function OrderTable() {
     }
 
     function refetch() {
-      // Chỉ refetch khi trong khoảng thời gian đang xem
+      // Only refetch when within the currently viewed time range
       const now = new Date()
       if (fromDate <= now && toDate >= now) {
         refetchOrderList()
@@ -172,8 +172,8 @@ export default function OrderTable() {
       const guest = data[0].guest
 
       toast({
-        title: 'Khách tạo đơn hàng',
-        description: `${guest?.name} tại bàn ${guest?.tableNumber} vừa đặt ${data.length} đơn.`,
+        title: 'New Order',
+        description: `${guest?.name} at table ${guest?.tableNumber} placed ${data.length} order(s).`,
       })
       refetch()
     }
@@ -181,10 +181,10 @@ export default function OrderTable() {
     function onUpdateOrder(data: UpdateOrderResType['data']) {
       console.log('Reveived update from server:', data)
       toast({
-        title: 'Cập nhật đơn hàng',
-        description: `${data.dishSnapshot.name} (SL: ${
+        title: 'Order Updated',
+        description: `${data.dishSnapshot.name} (Qty: ${
           data.quantity
-        }) vừa được cập nhật sang trạng thái "${getVietnameseOrderStatus(data.status)}".`,
+        }) was updated to "${getVietnameseOrderStatus(data.status)}".`,
       })
       refetch()
     }
@@ -192,8 +192,8 @@ export default function OrderTable() {
     function onPayment(data: PayGuestOrdersResType['data']) {
       const guest = data[0].guest
       toast({
-        title: 'Thanh toán',
-        description: `${guest?.name} tại bàn ${guest?.tableNumber} đã thanh toán ${data.length} đơn.`,
+        title: 'Payment',
+        description: `${guest?.name} at table ${guest?.tableNumber} paid for ${data.length} order(s).`,
       })
       refetch()
     }
@@ -227,7 +227,7 @@ export default function OrderTable() {
         <div className=" flex items-center">
           <div className="flex flex-wrap gap-2">
             <div className="flex items-center">
-              <span className="mr-2">Từ</span>
+              <span className="mr-2">From</span>
               <Input
                 type="datetime-local"
                 placeholder="Từ ngày"
@@ -238,7 +238,7 @@ export default function OrderTable() {
               />
             </div>
             <div className="flex items-center">
-              <span className="mr-2">Đến</span>
+              <span className="mr-2">To</span>
               <Input
                 type="datetime-local"
                 placeholder="Đến ngày"
@@ -257,13 +257,13 @@ export default function OrderTable() {
         </div>
         <div className="flex flex-wrap items-center gap-4 py-4">
           <Input
-            placeholder="Tên khách"
+            placeholder="Guest name"
             value={(table.getColumn('guestName')?.getFilterValue() as string) ?? ''}
             onChange={(event) => table.getColumn('guestName')?.setFilterValue(event.target.value)}
             className="max-w-[100px]"
           />
           <Input
-            placeholder="Số bàn"
+            placeholder="Table no."
             value={(table.getColumn('tableNumber')?.getFilterValue() as string) ?? ''}
             onChange={(event) => table.getColumn('tableNumber')?.setFilterValue(event.target.value)}
             className="max-w-[80px]"
@@ -280,7 +280,7 @@ export default function OrderTable() {
                   ? getVietnameseOrderStatus(
                       table.getColumn('status')?.getFilterValue() as (typeof OrderStatusValues)[number],
                     )
-                  : 'Trạng thái'}
+                  : 'Status'}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
@@ -362,8 +362,8 @@ export default function OrderTable() {
         )}
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="text-xs text-muted-foreground py-4 flex-1 ">
-            Hiển thị <strong>{table.getPaginationRowModel().rows.length}</strong> trong{' '}
-            <strong>{orderList.length}</strong> kết quả
+            Showing <strong>{table.getPaginationRowModel().rows.length}</strong> of{' '}
+            <strong>{orderList.length}</strong> results
           </div>
           <div>
             <AutoPagination

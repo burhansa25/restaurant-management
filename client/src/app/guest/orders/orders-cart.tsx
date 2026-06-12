@@ -64,10 +64,10 @@ export default function OrdersCart() {
     function onUpdateOrder(data: UpdateOrderResType['data']) {
       console.log('Reveived update from server:', data)
       toast({
-        title: 'Cập nhật đơn hàng',
-        description: `${data.dishSnapshot.name} (SL: ${
+        title: 'Order Updated',
+        description: `${data.dishSnapshot.name} (Qty: ${
           data.quantity
-        }) vừa được cập nhật sang trạng thái "${getVietnameseOrderStatus(data.status)}".`,
+        }) was updated to "${getVietnameseOrderStatus(data.status)}".`,
       })
       refetch()
     }
@@ -75,7 +75,7 @@ export default function OrdersCart() {
     function onPayment(data: PayGuestOrdersResType['data']) {
       const guest = data[0].guest
       toast({
-        description: `Bạn đã thanh toán thành công hóa đơn.`,
+        description: `Your payment was successful.`,
       })
       refetch()
     }
@@ -95,7 +95,7 @@ export default function OrdersCart() {
 
   return (
     <>
-      <h1 className="text-center text-xl font-bold">🧾 Đơn hàng</h1>
+      <h1 className="text-center text-xl font-bold">🧾 Your Orders</h1>
       {orders.map((order, index) => (
         <div key={order.id} className="flex gap-4 ">
           <div className="text-sm font-semibold">{index + 1}.</div>
@@ -126,14 +126,14 @@ export default function OrdersCart() {
       {paid.quantity !== 0 && (
         <div className="sticky bottom-0 p-2">
           <div className="flex justify-between w-full max-w-md mt-4 text-lg text-white font-medium">
-            <span>Đơn đã thanh toán · {paid.quantity} món</span>
+            <span>Paid orders · {paid.quantity} item(s)</span>
             <span className="text-yellow-400 font-semibold">{formatCurrency(paid.price)}</span>
           </div>
         </div>
       )}
       <div className="sticky bottom-0 p-2">
         <div className="flex justify-between w-full max-w-md mt-4 text-lg text-white font-medium">
-          <span>Đơn chưa thanh toán · {waitingForPayment.quantity} món</span>
+          <span>Unpaid orders · {waitingForPayment.quantity} item(s)</span>
           <span className="text-yellow-400 font-semibold">{formatCurrency(waitingForPayment.price)}</span>
         </div>
       </div>

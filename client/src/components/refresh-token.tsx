@@ -16,7 +16,7 @@ export default function RefreshToken() {
     if (UNAUTHENTICATED_PATH.includes(pathname)) return
     let interval: any = null
 
-    // Phải gọi lần đầu tiên, vì interval phải đợi TIMEOUT mới chạy
+    // Must be called immediately on mount, since the interval waits TIMEOUT before first run
     const onRefreshToken = (force?: boolean) =>
       checkAndRefreshToken({
         force,
@@ -27,7 +27,7 @@ export default function RefreshToken() {
         },
       })
     onRefreshToken()
-    // TIMEOUT phải bé hơn thời gian accessToken hết hạn
+    // TIMEOUT must be shorter than the accessToken expiry time
     const TIMEOUT = 300000
     interval = setInterval(() => onRefreshToken(), TIMEOUT)
 
