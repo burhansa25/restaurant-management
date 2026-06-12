@@ -133,7 +133,7 @@ export default function GuestsDialog({ onChoose }: { onChoose: (guest: GuestItem
                 <span className="mr-2">From</span>
                 <Input
                   type="datetime-local"
-                  placeholder="Từ ngày"
+                  placeholder="Start date"
                   className="text-sm"
                   value={format(fromDate, 'yyyy-MM-dd HH:mm').replace(' ', 'T')}
                   suppressHydrationWarning
@@ -144,7 +144,7 @@ export default function GuestsDialog({ onChoose }: { onChoose: (guest: GuestItem
                 <span className="mr-2">To</span>
                 <Input
                   type="datetime-local"
-                  placeholder="Đến ngày"
+                  placeholder="End date"
                   value={format(toDate, 'yyyy-MM-dd HH:mm').replace(' ', 'T')}
                   suppressHydrationWarning
                   onChange={(event) => setToDate(new Date(event.target.value))}

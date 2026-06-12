@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   const cookieStore = await cookies()
   const refreshToken = cookieStore.get('refreshToken')?.value
   if (!refreshToken) {
-    return Response.json({ message: 'Không tìm thấy refreshToken' }, { status: 401 })
+    return Response.json({ message: 'Refresh token not found' }, { status: 401 })
   }
   try {
     const { payload } = await authApi.sRefreshToken({
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
         status: error.status,
       })
     } else {
-      return Response.json({ message: `Có lỗi xảy ra khi login` }, { status: 401 })
+      return Response.json({ message: `An error occurred during login` }, { status: 401 })
     }
   }
 }

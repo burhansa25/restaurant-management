@@ -10,7 +10,7 @@ import { ServingGuestByTableNumber, Statics, StatusCountObject } from '@/app/man
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import OrderGuestDetail from '@/app/manage/orders/order-guest-detail'
 
-// Ví dụ:
+// Example:
 // const statics: Statics = {
 //   status: {
 //     Pending: 1,

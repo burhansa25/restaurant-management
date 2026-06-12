@@ -100,7 +100,7 @@ export const columns: ColumnDef<AccountType>[] = [
     enableHiding: false,
     cell: function Actions({ row }) {
       // useContext needed to access setEmployeeIdEdit and setEmployeeDelete
-      const { setEmployeeIdEdit, setEmployeeDelete } = useContext(AccountTableContext) //AccountTableContext dùng trong file này không export
+      const { setEmployeeIdEdit, setEmployeeDelete } = useContext(AccountTableContext)
       const openEditEmployee = () => {
         setEmployeeIdEdit(row.original.id)
       }
