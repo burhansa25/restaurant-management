@@ -11,6 +11,12 @@ const remotePatterns: NonNullable<NextConfig['images']>['remotePatterns'] = [
     hostname: 'placehold.co',
     pathname: '/**',
   },
+  {
+    protocol: 'https',
+    hostname: 'restaurant-server-staging-053118362.azurewebsites.net',
+    port: '',
+    pathname: '/**',
+  }
 ]
 
 if (process.env.NEXT_PUBLIC_API_ENDPOINT) {
@@ -28,7 +34,6 @@ if (process.env.NEXT_PUBLIC_API_ENDPOINT) {
 }
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
   images: {
     remotePatterns,
   },
