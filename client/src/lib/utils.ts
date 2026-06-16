@@ -20,6 +20,26 @@ export function normalizePath(path: string) {
   return path.startsWith('/') ? path.slice(1) : path
 }
 
+export function getBrowserImageUrl(imageUrl: string) {
+  const internalApiEndpoint = envConfig.DOCKER_PUBLIC_API_ENDPOINT ?? 'http://server:4000'
+
+  try {
+    const currentUrl = new URL(imageUrl)
+    const internalUrl = new URL(internalApiEndpoint)
+    const browserUrl = new URL(envConfig.NEXT_PUBLIC_API_ENDPOINT)
+
+    if (currentUrl.origin === internalUrl.origin) {
+      currentUrl.protocol = browserUrl.protocol
+      currentUrl.host = browserUrl.host
+      return currentUrl.toString()
+    }
+  } catch {
+    return imageUrl
+  }
+
+  return imageUrl
+}
+
 export const handleErrorApi = ({
   error,
   setError,

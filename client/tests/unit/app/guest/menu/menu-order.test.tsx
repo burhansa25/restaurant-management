@@ -46,7 +46,7 @@ jest.mock('@/app/guest/menu/quantity', () => {
     return React.createElement(
       'button',
       {
-        onClick: () => props.onChange(1),
+        onClick: () => props.onChange(props.value + 1),
       },
       'Add',
     )
@@ -82,10 +82,50 @@ describe('MenuOrder', () => {
       buttons[1],
     )
 
-    expect(mutateMock).toHaveBeenCalled()
+    expect(mutateMock).toHaveBeenCalledWith([
+      {
+        dishId: 1,
+        quantity: 1,
+        note: null,
+      },
+    ])
 
     expect(pushMock).toHaveBeenCalledWith(
       '/guest/orders',
     )
+  })
+
+  it('sends note for the selected item and keeps it when quantity changes', async () => {
+    mutateMock.mockResolvedValue({})
+
+    render(<MenuOrder />)
+
+    await userEvent.click(
+      screen.getByText('Add'),
+    )
+
+    await userEvent.type(
+      screen.getByLabelText('Catatan pesanan (opsional)'),
+      'Tanpa acar',
+    )
+
+    await userEvent.click(
+      screen.getByText('Add'),
+    )
+
+    const buttons =
+      screen.getAllByRole('button')
+
+    await userEvent.click(
+      buttons[1],
+    )
+
+    expect(mutateMock).toHaveBeenCalledWith([
+      {
+        dishId: 1,
+        quantity: 2,
+        note: 'Tanpa acar',
+      },
+    ])
   })
 })

@@ -1,5 +1,5 @@
 import dishApi from '@/apiRequests/dish'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency, getBrowserImageUrl } from '@/lib/utils'
 import { DishListResType } from '@/schemas/dish.schema'
 import Image from 'next/image'
 
@@ -40,7 +40,8 @@ export default async function Home() {
                   width={150}
                   height={150}
                   quality={100}
-                  src={dish.image}
+                  src={getBrowserImageUrl(dish.image)}
+                  unoptimized
                   className="object-cover w-[150px] h-[150px] rounded-md"
                 />
               </div>

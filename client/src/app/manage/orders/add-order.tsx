@@ -16,7 +16,7 @@ import GuestsDialog from '@/app/manage/orders/guests-dialog'
 import { CreateOrdersBodyType } from '@/schemas/order.schema'
 import Quantity from '@/app/guest/menu/quantity'
 import Image from 'next/image'
-import { cn, formatCurrency, handleErrorApi } from '@/lib/utils'
+import { cn, formatCurrency, getBrowserImageUrl, handleErrorApi } from '@/lib/utils'
 import { DishStatus } from '@/constants/type'
 import { DishListResType } from '@/schemas/dish.schema'
 import { useGetAllDishes } from '@/queries/useDish'
@@ -196,11 +196,12 @@ export default function AddOrder() {
                   <span className="absolute inset-0 flex items-center justify-center text-sm">Sold Out</span>
                 )}
                 <Image
-                  src={dish.image}
+                  src={getBrowserImageUrl(dish.image)}
                   alt={dish.name}
                   height={100}
                   width={100}
                   quality={100}
+                  unoptimized
                   className="object-cover w-[80px] h-[80px] rounded-md"
                 />
               </div>

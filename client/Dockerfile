@@ -32,6 +32,7 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 
+
 COPY package*.json ./
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
@@ -40,5 +41,3 @@ COPY --from=builder /app/next.config.ts ./next.config.ts
 RUN npm ci --omit=dev --network-timeout=100000
 
 EXPOSE 3000
-
-CMD ["npm", "run", "start"]

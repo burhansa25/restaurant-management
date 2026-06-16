@@ -8,7 +8,7 @@ import { UpdateOrderBody, UpdateOrderBodyType } from '@/schemas/order.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { getVietnameseOrderStatus, handleErrorApi } from '@/lib/utils'
+import { getBrowserImageUrl, getVietnameseOrderStatus, handleErrorApi } from '@/lib/utils'
 import { OrderStatus, OrderStatusValues } from '@/constants/type'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DishesDialog } from '@/app/manage/orders/dishes-dialog'
@@ -107,7 +107,7 @@ export default function EditOrder({
                     <FormLabel>Dish</FormLabel>
                     <div className="flex items-center col-span-2 space-x-4">
                       <Avatar className="aspect-square w-[50px] h-[50px] rounded-md object-cover">
-                        <AvatarImage src={selectedDish?.image} />
+                        <AvatarImage src={selectedDish?.image ? getBrowserImageUrl(selectedDish.image) : undefined} />
                         <AvatarFallback className="rounded-none">{selectedDish?.name}</AvatarFallback>
                       </Avatar>
                       <div>{selectedDish?.name}</div>

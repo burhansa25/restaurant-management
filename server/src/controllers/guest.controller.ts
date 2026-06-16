@@ -143,6 +143,7 @@ export const guestCreateOrdersController = async (guestId: number, body: GuestCr
     }
     const orders = await Promise.all(
       body.map(async (order) => {
+        const normalizedNote = typeof order.note === 'string' && order.note.trim().length > 0 ? order.note.trim() : null
         const dish = await tx.dish.findUniqueOrThrow({
           where: {
             id: order.dishId
@@ -169,6 +170,7 @@ export const guestCreateOrdersController = async (guestId: number, body: GuestCr
             dishSnapshotId: dishSnapshot.id,
             guestId,
             quantity: order.quantity,
+            note: normalizedNote,
             tableNumber: guest.tableNumber,
             orderHandlerId: null,
             status: OrderStatus.Pending

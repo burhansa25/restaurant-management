@@ -14,7 +14,13 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { GetOrdersResType } from '@/schemas/order.schema'
 import { useContext } from 'react'
-import { formatCurrency, formatDateTimeToLocaleString, getVietnameseOrderStatus, simpleMatchText } from '@/lib/utils'
+import {
+  formatCurrency,
+  formatDateTimeToLocaleString,
+  getBrowserImageUrl,
+  getVietnameseOrderStatus,
+  simpleMatchText,
+} from '@/lib/utils'
 import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
 import { OrderStatus, OrderStatusValues } from '@/constants/type'
@@ -75,20 +81,22 @@ const orderTableColumns: ColumnDef<OrderItem>[] = [
         <Popover>
           <PopoverTrigger asChild>
             <Image
-              src={row.original.dishSnapshot.image}
+              src={getBrowserImageUrl(row.original.dishSnapshot.image)}
               alt={row.original.dishSnapshot.name}
               width={50}
               height={50}
+              unoptimized
               className='rounded-md object-cover w-[50px] h-[50px] cursor-pointer'
             />
           </PopoverTrigger>
           <PopoverContent>
             <div className='flex flex-wrap gap-2'>
               <Image
-                src={row.original.dishSnapshot.image}
+                src={getBrowserImageUrl(row.original.dishSnapshot.image)}
                 alt={row.original.dishSnapshot.name}
                 width={100}
                 height={100}
+                unoptimized
                 className='rounded-md object-cover w-[100px] h-[100px]'
               />
               <div className='space-y-1 text-sm'>
@@ -108,6 +116,11 @@ const orderTableColumns: ColumnDef<OrderItem>[] = [
             </Badge>
           </div>
           <span className='italic'>{formatCurrency(row.original.dishSnapshot.price * row.original.quantity)}</span>
+          {row.original.note ? (
+            <p className='max-w-[220px] whitespace-normal text-xs'>
+              <span className='font-medium'>Catatan:</span> {row.original.note}
+            </p>
+          ) : null}
         </div>
       </div>
     )

@@ -1,5 +1,5 @@
 import { Role } from '@/constants/type'
-import { OrderSchema } from '@/schemas/order.schema'
+import { OrderNoteSchema, OrderSchema } from '@/schemas/order.schema'
 import z from 'zod'
 
 export const GuestLoginBody = z
@@ -34,6 +34,7 @@ export const GuestCreateOrdersBody = z.array(
   z.object({
     dishId: z.number(),
     quantity: z.number(),
+    note: OrderNoteSchema,
   }),
 )
 

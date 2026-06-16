@@ -4,7 +4,7 @@ import { useAppContext } from '@/components/app-provider'
 import { Badge } from '@/components/ui/badge'
 import { toast } from '@/components/ui/use-toast'
 import { OrderStatus } from '@/constants/type'
-import { formatCurrency, getVietnameseOrderStatus } from '@/lib/utils'
+import { formatCurrency, getBrowserImageUrl, getVietnameseOrderStatus } from '@/lib/utils'
 import { useGuestGetOrderListMutation } from '@/queries/useGuest'
 import { PayGuestOrdersResType, UpdateOrderResType } from '@/schemas/order.schema'
 import Image from 'next/image'
@@ -101,11 +101,12 @@ export default function OrdersCart() {
           <div className="text-sm font-semibold">{index + 1}.</div>
           <div className="flex-shrink-0 relative">
             <Image
-              src={order.dishSnapshot.image}
+              src={getBrowserImageUrl(order.dishSnapshot.image)}
               alt={order.dishSnapshot.name}
               height={100}
               width={100}
               quality={100}
+              unoptimized
               className="object-cover w-[80px] h-[80px] rounded-md"
             />
           </div>

@@ -16,7 +16,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { formatCurrency, getVietnameseDishStatus, simpleMatchText } from '@/lib/utils'
+import { formatCurrency, getBrowserImageUrl, getVietnameseDishStatus, simpleMatchText } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import Image from 'next/image'
 import { useGetAllDishes } from '@/queries/useDish'
@@ -30,10 +30,11 @@ export const columns: ColumnDef<DishItem>[] = [
     cell: ({ row }) => (
       <div className="flex items-center space-x-4">
         <Image
-          src={row.original.image}
+          src={getBrowserImageUrl(row.original.image)}
           alt={row.original.name}
           width={50}
           height={50}
+          unoptimized
           className="rounded-md object-cover w-[50px] h-[50px]"
         />
         <span>{row.original.name}</span>

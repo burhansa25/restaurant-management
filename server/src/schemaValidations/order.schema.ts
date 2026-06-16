@@ -14,6 +14,17 @@ const DishSnapshotSchema = z.object({
   createdAt: z.date(),
   updatedAt: z.date()
 })
+
+export const OrderNoteSchema = z
+  .union([z.string().trim().max(500), z.null()])
+  .optional()
+  .transform((note) => {
+    if (typeof note === 'string') {
+      return note.length > 0 ? note : null
+    }
+    return note
+  })
+
 export const OrderSchema = z.object({
   id: z.number(),
   guestId: z.number().nullable(),
@@ -30,6 +41,7 @@ export const OrderSchema = z.object({
   dishSnapshotId: z.number(),
   dishSnapshot: DishSnapshotSchema,
   quantity: z.number(),
+  note: z.string().nullable(),
   orderHandlerId: z.number().nullable(),
   orderHandler: AccountSchema.nullable(),
   status: z.enum(OrderStatusValues),
@@ -97,7 +109,8 @@ export const CreateOrdersBody = z
     orders: z.array(
       z.object({
         dishId: z.number(),
-        quantity: z.number()
+        quantity: z.number(),
+        note: OrderNoteSchema
       })
     )
   })
