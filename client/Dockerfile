@@ -41,3 +41,5 @@ COPY --from=builder /app/next.config.ts ./next.config.ts
 RUN npm ci --omit=dev --network-timeout=100000
 
 EXPOSE 3000
+
+CMD ["npm", "run", "start"]
