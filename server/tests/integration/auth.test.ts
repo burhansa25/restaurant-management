@@ -1,6 +1,5 @@
 import Fastify from 'fastify'
 import fastifyAuth from '@fastify/auth'
-import authRoutes from '@/routes/auth.route'
 import validatorCompilerPlugin from '@/plugins/validatorCompiler.plugins'
 
 const mockLoginController = jest.fn()
@@ -29,6 +28,9 @@ describe('Auth Routes', () => {
     app = Fastify({ logger: false })
     await app.register(validatorCompilerPlugin)
     await app.register(fastifyAuth, { defaultRelation: 'and' })
+
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const authRoutes = require('../../src/routes/auth.route').default
 
     await app.register(authRoutes, { prefix: '/auth' })
     await app.ready()
