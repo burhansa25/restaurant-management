@@ -1,5 +1,5 @@
 import { Role } from '@/constants/type'
-import { OrderSchema } from '@/schemaValidations/order.schema'
+import { OrderNoteSchema, OrderSchema } from '@/schemaValidations/order.schema'
 import z from 'zod'
 
 export const GuestLoginBody = z
@@ -33,7 +33,8 @@ export type GuestLoginResType = z.TypeOf<typeof GuestLoginRes>
 export const GuestCreateOrdersBody = z.array(
   z.object({
     dishId: z.number(),
-    quantity: z.number()
+    quantity: z.number(),
+    note: OrderNoteSchema
   })
 )
 

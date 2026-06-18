@@ -16,7 +16,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { formatCurrency, getVietnameseDishStatus, simpleMatchText } from '@/lib/utils'
+import { formatCurrency, getBrowserImageUrl, getVietnameseDishStatus, simpleMatchText } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import Image from 'next/image'
 import { useGetAllDishes } from '@/queries/useDish'
@@ -26,14 +26,15 @@ type DishItem = DishListResType['data'][0]
 export const columns: ColumnDef<DishItem>[] = [
   {
     id: 'dishName',
-    header: 'Món ăn',
+    header: 'Dish',
     cell: ({ row }) => (
       <div className="flex items-center space-x-4">
         <Image
-          src={row.original.image}
+          src={getBrowserImageUrl(row.original.image)}
           alt={row.original.name}
           width={50}
           height={50}
+          unoptimized
           className="rounded-md object-cover w-[50px] h-[50px]"
         />
         <span>{row.original.name}</span>
@@ -46,12 +47,12 @@ export const columns: ColumnDef<DishItem>[] = [
   },
   {
     accessorKey: 'price',
-    header: 'Giá cả',
+    header: 'Price',
     cell: ({ row }) => <div className="capitalize">{formatCurrency(row.getValue('price'))}</div>,
   },
   {
     accessorKey: 'status',
-    header: 'Trạng thái',
+    header: 'Status',
     cell: ({ row }) => <div>{getVietnameseDishStatus(row.getValue('status'))}</div>,
   },
 ]
@@ -66,7 +67,7 @@ export function DishesDialog({ onChoose }: { onChoose: (dish: DishItem) => void 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
   const [pagination, setPagination] = useState({
-    pageIndex: 0, // Gía trị mặc định ban đầu, không có ý nghĩa khi data được fetch bất đồng bộ
+    pageIndex: 0, // Default initial value, irrelevant when data is fetched asynchronously
     pageSize: PAGE_SIZE, //default page size
   })
 
@@ -107,17 +108,17 @@ export function DishesDialog({ onChoose }: { onChoose: (dish: DishItem) => void 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Thay đổi</Button>
+        <Button variant="outline">Change</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-full overflow-auto">
         <DialogHeader>
-          <DialogTitle>Chọn món ăn</DialogTitle>
+          <DialogTitle>Select Dish</DialogTitle>
         </DialogHeader>
         <div>
           <div className="w-full">
             <div className="flex items-center py-4">
               <Input
-                placeholder="Lọc tên"
+                placeholder="Filter by name"
                 value={(table.getColumn('dishName')?.getFilterValue() as string) ?? ''}
                 onChange={(event) => table.getColumn('dishName')?.setFilterValue(event.target.value)}
                 className="max-w-sm"
@@ -168,8 +169,8 @@ export function DishesDialog({ onChoose }: { onChoose: (dish: DishItem) => void 
             </div>
             <div className="flex items-center justify-end space-x-2 py-4">
               <div className="text-xs text-muted-foreground py-4 flex-1 ">
-                Hiển thị <strong>{table.getPaginationRowModel().rows.length}</strong> trong{' '}
-                <strong>{data.length}</strong> kết quả
+                Showing <strong>{table.getPaginationRowModel().rows.length}</strong> of{' '}
+                <strong>{data.length}</strong> results
               </div>
               <div>
                 <AutoPagination

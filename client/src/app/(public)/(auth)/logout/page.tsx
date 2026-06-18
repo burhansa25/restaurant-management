@@ -14,9 +14,11 @@ function Logout() {
   const searchParams = useSearchParams()
   const refreshTokenFromURL = searchParams.get('refreshToken')
   const accessTokenFromURL = searchParams.get('accessToken')
-  // lấy refreshToken từ query param
+  
+  // Extract refreshToken from query parameters
   const isLoggingOut = useRef(null)
-  // tạo một biến để giữ trạng thái đăng xuất, tránh việc gọi nhiều lần
+  
+  // Guard flag to prevent redundant concurrent logout requests
   useEffect(() => {
     if (
       !isLoggingOut.current &&
@@ -27,17 +29,17 @@ function Logout() {
         setTimeout(() => {
           isLoggingOut.current = null
         }, 10)
-        // setTimeout để tránh việc user logout duplicate
+        // Debounce timeout to handle strict UI re-renders and avoid duplication
         disconnectSocket()
         router.push('/login')
       })
     } else {
-      // trường hợp hi hữu là token khi refreshToken hoặc accessToken không hợp lệ hoặc không khớp -> tránh dừng lại ở page này
+      // Fallback redirect if tokens are mismatched or session is invalid
       router.push('/')
     }
   }, [mutateAsync, router, refreshTokenFromURL, accessTokenFromURL, setRole, disconnectSocket])
 
-  return <div>Logging out...</div>
+  return <div>Signing out...</div>
 }
 
 export default function LogoutPage() {

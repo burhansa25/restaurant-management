@@ -49,8 +49,8 @@ export default function LoginForm() {
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">Đăng nhập</CardTitle>
-        <CardDescription>Nhập email và mật khẩu của bạn để đăng nhập vào hệ thống</CardDescription>
+        <CardTitle className="text-2xl">Welcome Back</CardTitle>
+        <CardDescription>Please sign in to your account to manage the restaurant</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -68,8 +68,8 @@ export default function LoginForm() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid gap-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" placeholder="m@example.com" required {...field} />
+                      <Label htmlFor="email">Email Address</Label>
+                      <Input id="email" type="email" placeholder="name@example.com" required {...field} />
                       <FormMessage />
                     </div>
                   </FormItem>
@@ -91,10 +91,10 @@ export default function LoginForm() {
                 )}
               />
               <Button type="submit" className="w-full">
-                Đăng nhập
+                Sign In
               </Button>
               <Button variant="outline" className="w-full" type="button">
-                Đăng nhập bằng Google
+                Sign in with Google
               </Button>
             </div>
           </form>

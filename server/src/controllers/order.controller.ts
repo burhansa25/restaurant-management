@@ -25,6 +25,8 @@ export const createOrdersController = async (orderHandlerId: number, body: Creat
     prisma.$transaction(async (tx) => {
       const ordersRecord = await Promise.all(
         orders.map(async (order) => {
+          const normalizedNote =
+            typeof order.note === 'string' && order.note.trim().length > 0 ? order.note.trim() : null
           const dish = await tx.dish.findUniqueOrThrow({
             where: {
               id: order.dishId
@@ -51,6 +53,7 @@ export const createOrdersController = async (orderHandlerId: number, body: Creat
               dishSnapshotId: dishSnapshot.id,
               guestId,
               quantity: order.quantity,
+              note: normalizedNote,
               tableNumber: guest.tableNumber,
               orderHandlerId,
               status: OrderStatus.Pending

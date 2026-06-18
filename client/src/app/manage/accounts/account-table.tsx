@@ -62,7 +62,7 @@ const AccountTableContext = createContext<{
 })
 
 export const columns: ColumnDef<AccountType>[] = [
-  { id: 'stt', header: 'STT', cell: ({ row }) => row.index + 1 },
+  { id: 'stt', header: 'No.', cell: ({ row }) => row.index + 1 },
   {
     accessorKey: 'id',
     header: 'ID',
@@ -81,7 +81,7 @@ export const columns: ColumnDef<AccountType>[] = [
   },
   {
     accessorKey: 'name',
-    header: 'Tên',
+    header: 'Name',
     cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
   },
   {
@@ -99,8 +99,8 @@ export const columns: ColumnDef<AccountType>[] = [
     id: 'actions',
     enableHiding: false,
     cell: function Actions({ row }) {
-      // cần useContext để có thể lấy được hàm setEmployeeIdEdit và setEmployeeDelete
-      const { setEmployeeIdEdit, setEmployeeDelete } = useContext(AccountTableContext) //AccountTableContext dùng trong file này không export
+      // useContext needed to access setEmployeeIdEdit and setEmployeeDelete
+      const { setEmployeeIdEdit, setEmployeeDelete } = useContext(AccountTableContext)
       const openEditEmployee = () => {
         setEmployeeIdEdit(row.original.id)
       }
@@ -119,8 +119,8 @@ export const columns: ColumnDef<AccountType>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={openEditEmployee}>Sửa</DropdownMenuItem>
-            <DropdownMenuItem onClick={openDeleteEmployee}>Xóa</DropdownMenuItem>
+            <DropdownMenuItem onClick={openEditEmployee}>Edit</DropdownMenuItem>
+            <DropdownMenuItem onClick={openDeleteEmployee}>Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
@@ -164,10 +164,10 @@ function AlertDialogDeleteAccount({
     >
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Xóa nhân viên?</AlertDialogTitle>
+          <AlertDialogTitle>Delete Employee?</AlertDialogTitle>
           <AlertDialogDescription>
-            Tài khoản <span className="bg-foreground text-primary-foreground rounded px-1">{employeeDelete?.name}</span>{' '}
-            sẽ bị xóa vĩnh viễn
+            Account <span className="bg-foreground text-primary-foreground rounded px-1">{employeeDelete?.name}</span>{' '}
+            will be permanently deleted
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -178,7 +178,7 @@ function AlertDialogDeleteAccount({
     </AlertDialog>
   )
 }
-// Số lượng item trên 1 trang
+// Number of items per page
 const PAGE_SIZE = 10
 export default function AccountTable() {
   const searchParam = useSearchParams()
@@ -196,7 +196,7 @@ export default function AccountTable() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
   const [pagination, setPagination] = useState({
-    pageIndex, // Gía trị mặc định ban đầu, không có ý nghĩa khi data được fetch bất đồng bộ
+    pageIndex, // Default initial value, irrelevant when data is fetched asynchronously
     pageSize: PAGE_SIZE, //default page size
   })
 
@@ -281,8 +281,8 @@ export default function AccountTable() {
         </div>
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="text-xs text-muted-foreground py-4 flex-1 ">
-            Hiển thị <strong>{table.getPaginationRowModel().rows.length}</strong> trong <strong>{data.length}</strong>{' '}
-            kết quả
+            Showing <strong>{table.getPaginationRowModel().rows.length}</strong> of <strong>{data.length}</strong>{' '}
+            results
           </div>
           <div>
             <AutoPagination

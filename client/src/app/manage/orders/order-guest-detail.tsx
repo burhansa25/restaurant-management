@@ -6,6 +6,7 @@ import {
   formatCurrency,
   formatDateTimeToLocaleString,
   formatDateTimeToTimeString,
+  getBrowserImageUrl,
   getVietnameseOrderStatus,
   handleErrorApi,
 } from '@/lib/utils'
@@ -47,73 +48,83 @@ export default function OrderGuestDetail({
       {guest && (
         <Fragment>
           <div className="space-x-1">
-            <span className="font-semibold">Tên:</span>
+            <span className="font-semibold">Name:</span>
             <span>{guest.name}</span>
             <span className="font-semibold">(#{guest.id})</span>
             <span>|</span>
-            <span className="font-semibold">Bàn:</span>
+            <span className="font-semibold">Table:</span>
             <span>{guest.tableNumber}</span>
           </div>
           <div className="space-x-1">
-            <span className="font-semibold">Ngày đăng ký:</span>
+            <span className="font-semibold">Registered:</span>
             <span>{formatDateTimeToLocaleString(guest.createdAt)}</span>
           </div>
         </Fragment>
       )}
 
       <div className="space-y-1">
-        <div className="font-semibold">Đơn hàng:</div>
+        <div className="font-semibold">Orders:</div>
         {orders.map((order, index) => {
           return (
-            <div key={order.id} className="flex gap-2 items-center text-xs">
-              <span className="w-[10px]">{index + 1}</span>
-              <span title={getVietnameseOrderStatus(order.status)}>
-                {order.status === OrderStatus.Pending && <OrderStatusIcon.Pending className="w-4 h-4" />}
-                {order.status === OrderStatus.Processing && <OrderStatusIcon.Processing className="w-4 h-4" />}
-                {order.status === OrderStatus.Rejected && <OrderStatusIcon.Rejected className="w-4 h-4 text-red-400" />}
-                {order.status === OrderStatus.Delivered && <OrderStatusIcon.Delivered className="w-4 h-4" />}
-                {order.status === OrderStatus.Paid && <OrderStatusIcon.Paid className="w-4 h-4 text-yellow-400" />}
-              </span>
-              <Image
-                src={order.dishSnapshot.image}
-                alt={order.dishSnapshot.name}
-                title={order.dishSnapshot.name}
-                width={30}
-                height={30}
-                className="h-[30px] w-[30px] rounded object-cover"
-              />
-              <span className="truncate w-[70px] sm:w-[100px]" title={order.dishSnapshot.name}>
-                {order.dishSnapshot.name}
-              </span>
-              <span className="font-semibold" title={`Tổng: ${order.quantity}`}>
-                x{order.quantity}
-              </span>
-              <span className="italic">{formatCurrency(order.quantity * order.dishSnapshot.price)}</span>
-              <span
-                className="hidden sm:inline"
-                title={`Tạo: ${formatDateTimeToLocaleString(
-                  order.createdAt,
-                )} | Cập nhật: ${formatDateTimeToLocaleString(order.updatedAt)}
+            <div key={order.id} className="space-y-1">
+              <div className="flex gap-2 items-center text-xs">
+                <span className="w-[10px]">{index + 1}</span>
+                <span title={getVietnameseOrderStatus(order.status)}>
+                  {order.status === OrderStatus.Pending && <OrderStatusIcon.Pending className="w-4 h-4" />}
+                  {order.status === OrderStatus.Processing && <OrderStatusIcon.Processing className="w-4 h-4" />}
+                  {order.status === OrderStatus.Rejected && (
+                    <OrderStatusIcon.Rejected className="w-4 h-4 text-red-400" />
+                  )}
+                  {order.status === OrderStatus.Delivered && <OrderStatusIcon.Delivered className="w-4 h-4" />}
+                  {order.status === OrderStatus.Paid && <OrderStatusIcon.Paid className="w-4 h-4 text-yellow-400" />}
+                </span>
+                <Image
+                  src={getBrowserImageUrl(order.dishSnapshot.image)}
+                  alt={order.dishSnapshot.name}
+                  title={order.dishSnapshot.name}
+                  width={30}
+                  height={30}
+                  unoptimized
+                  className="h-[30px] w-[30px] rounded object-cover"
+                />
+                <span className="truncate w-[70px] sm:w-[100px]" title={order.dishSnapshot.name}>
+                  {order.dishSnapshot.name}
+                </span>
+                <span className="font-semibold" title={`Total: ${order.quantity}`}>
+                  x{order.quantity}
+                </span>
+                <span className="italic">{formatCurrency(order.quantity * order.dishSnapshot.price)}</span>
+                <span
+                  className="hidden sm:inline"
+                  title={`Created: ${formatDateTimeToLocaleString(
+                    order.createdAt,
+                  )} | Updated: ${formatDateTimeToLocaleString(order.updatedAt)}
           `}
-              >
-                {formatDateTimeToLocaleString(order.createdAt)}
-              </span>
-              <span
-                className="sm:hidden"
-                title={`Tạo: ${formatDateTimeToLocaleString(
-                  order.createdAt,
-                )} | Cập nhật: ${formatDateTimeToLocaleString(order.updatedAt)}
+                >
+                  {formatDateTimeToLocaleString(order.createdAt)}
+                </span>
+                <span
+                  className="sm:hidden"
+                  title={`Created: ${formatDateTimeToLocaleString(
+                    order.createdAt,
+                  )} | Updated: ${formatDateTimeToLocaleString(order.updatedAt)}
           `}
-              >
-                {formatDateTimeToTimeString(order.createdAt)}
-              </span>
+                >
+                  {formatDateTimeToTimeString(order.createdAt)}
+                </span>
+              </div>
+              {order.note ? (
+                <p className="pl-[88px] text-xs whitespace-normal">
+                  <span className="font-medium">Catatan:</span> {order.note}
+                </p>
+              ) : null}
             </div>
           )
         })}
       </div>
 
       <div className="space-x-1">
-        <span className="font-semibold">Chưa thanh toán:</span>
+        <span className="font-semibold">Unpaid:</span>
         <Badge>
           <span>
             {formatCurrency(
@@ -125,7 +136,7 @@ export default function OrderGuestDetail({
         </Badge>
       </div>
       <div className="space-x-1">
-        <span className="font-semibold">Đã thanh toán:</span>
+        <span className="font-semibold">Paid:</span>
         <Badge variant={'outline'}>
           <span>
             {formatCurrency(
@@ -145,7 +156,7 @@ export default function OrderGuestDetail({
           disabled={ordersFilterToPurchase.length === 0}
           onClick={pay}
         >
-          Thanh toán tất cả ({ordersFilterToPurchase.length} đơn)
+          Pay All ({ordersFilterToPurchase.length} order(s))
         </Button>
       </div>
     </div>

@@ -19,7 +19,7 @@ export default function UpdateProfileForm() {
   const [file, setFile] = useState<File | null>(null)
   const avatarInputRef = useRef<HTMLInputElement>(null)
 
-  // dữ liệu người dùng lấy từ API bằng useQuery
+  // user data fetched from API via useQuery
   const { data, refetch } = useAccountMeQuery()
   const updateMeMutation = useUpdateMeMutation()
   const uploadMediaMutation = useUploadMediaMutation()
@@ -32,7 +32,7 @@ export default function UpdateProfileForm() {
   })
 
   useEffect(() => {
-    // sử dụng useEffect để chạy ngay lần đầu khi data được fetch thành công (hoặc khi refetch)
+    // run once on mount when data is fetched successfully (or on refetch)
     if (data) {
       const { name, avatar } = data.payload.data
       form.reset({
@@ -42,7 +42,7 @@ export default function UpdateProfileForm() {
     }
   }, [data, form])
 
-  // lấy avatar và name mặc định từ form ra
+  // get default avatar and name from the form
   const avatar = form.watch('avatar')
   const name = form.watch('name')
 
@@ -93,7 +93,7 @@ export default function UpdateProfileForm() {
       >
         <Card x-chunk="dashboard-07-chunk-0">
           <CardHeader>
-            <CardTitle>Thông tin cá nhân</CardTitle>
+            <CardTitle>Personal Information</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid gap-6">
@@ -140,7 +140,7 @@ export default function UpdateProfileForm() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid gap-3">
-                      <Label htmlFor="name">Tên</Label>
+                      <Label htmlFor="name">Name</Label>
                       <Input id="name" type="text" className="w-full" {...field} />
                       <FormMessage />
                     </div>
@@ -150,10 +150,10 @@ export default function UpdateProfileForm() {
 
               <div className=" items-center gap-2 md:ml-auto flex">
                 <Button variant="outline" size="sm" type="reset">
-                  Hủy
+                  Cancel
                 </Button>
                 <Button size="sm" type="submit">
-                  Lưu thông tin
+                  Save
                 </Button>
               </div>
             </div>

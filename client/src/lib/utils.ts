@@ -20,6 +20,26 @@ export function normalizePath(path: string) {
   return path.startsWith('/') ? path.slice(1) : path
 }
 
+export function getBrowserImageUrl(imageUrl: string) {
+  const internalApiEndpoint = envConfig.DOCKER_PUBLIC_API_ENDPOINT ?? 'http://server:4000'
+
+  try {
+    const currentUrl = new URL(imageUrl)
+    const internalUrl = new URL(internalApiEndpoint)
+    const browserUrl = new URL(envConfig.NEXT_PUBLIC_API_ENDPOINT)
+
+    if (currentUrl.origin === internalUrl.origin) {
+      currentUrl.protocol = browserUrl.protocol
+      currentUrl.host = browserUrl.host
+      return currentUrl.toString()
+    }
+  } catch {
+    return imageUrl
+  }
+
+  return imageUrl
+}
+
 export const handleErrorApi = ({
   error,
   setError,
@@ -38,8 +58,8 @@ export const handleErrorApi = ({
     })
   } else {
     toast({
-      title: 'Lỗi',
-      description: error?.payload?.message ?? 'Lỗi không xác định',
+      title: 'Error',
+      description: error?.payload?.message ?? 'An unknown error occurred',
       variant: 'destructive',
       duration: duration ?? 5000,
     })
@@ -79,32 +99,32 @@ export const checkAndRefreshToken = async ({
 }: {
   onError?: () => void
   onSuccess?: () => void
-  force?: boolean // Bắt buộc gọi API refresh token
+  force?: boolean // force API refresh token call
 }) => {
-  // 1. Lấy token hiện tại từ localStorage
+  // 1. Get current tokens from localStorage
   const accessToken = getAccessTokenFromLocalStorage()
   const refreshToken = getRefreshTokenFromLocalStorage()
   if (!accessToken || !refreshToken) return
 
-  // 2. Decode để đọc exp (thời gian hết hạn) & iat (thời gian tạo)
+  // 2. Decode to read exp (expiry) & iat (issued at)
   const decodeAccessToken = decodeToken(accessToken)
   const decodeRefreshToken = decodeToken(refreshToken)
 
-  // 3. Lấy thời gian hiện tại (giây)
+  // 3. Get current time in seconds
   const currentTime = new Date().getTime() / 1000 - 1
 
-  // 4. Nếu refresh token đã hết hạn → clear token + gọi onError
+  // 4. If refresh token expired → clear tokens + call onError
   if (decodeRefreshToken.exp <= currentTime) {
-    console.log('refresh token hết hạn')
+    console.log('refresh token expired')
     removeAccessTokenFromLocalStorage()
     removeRefreshTokenFromLocalStorage()
     return onError && onError()
   }
 
-  // 5. Nếu access token còn < 1/3 thời gian sống → gọi API refresh
+  // 5. If access token has < 1/3 of its lifetime left → call refresh API
   if (force || decodeAccessToken.exp - currentTime < (decodeAccessToken.exp - decodeAccessToken.iat) / 3) {
     try {
-      console.log('access token sắp hết hạn')
+      console.log('access token expiring soon')
       const role = decodeAccessToken.role
       const res = role === Role.Guest ? await guestApi.refreshToken() : await authApi.refreshToken()
       setAccessTokenToLocalStorage(res.payload.data.accessToken)
@@ -117,46 +137,46 @@ export const checkAndRefreshToken = async ({
 }
 
 export const formatCurrency = (number: number) => {
-  return new Intl.NumberFormat('vi-VN', {
+  return new Intl.NumberFormat('id-ID', {
     style: 'currency',
-    currency: 'VND',
+    currency: 'IDR',
   }).format(number)
 }
 
 export const getVietnameseDishStatus = (status: (typeof DishStatus)[keyof typeof DishStatus]) => {
   switch (status) {
     case DishStatus.Available:
-      return 'Có sẵn'
+      return 'Available'
     case DishStatus.Unavailable:
-      return 'Không có sẵn'
+      return 'Unavailable'
     default:
-      return 'Ẩn'
+      return 'Hidden'
   }
 }
 
 export const getVietnameseOrderStatus = (status: (typeof OrderStatus)[keyof typeof OrderStatus]) => {
   switch (status) {
     case OrderStatus.Delivered:
-      return 'Đã phục vụ'
+      return 'Delivered'
     case OrderStatus.Paid:
-      return 'Đã thanh toán'
+      return 'Paid'
     case OrderStatus.Pending:
-      return 'Chờ xử lý'
+      return 'Pending'
     case OrderStatus.Processing:
-      return 'Đang nấu'
+      return 'Processing'
     default:
-      return 'Từ chối'
+      return 'Rejected'
   }
 }
 
 export const getVietnameseTableStatus = (status: (typeof TableStatus)[keyof typeof TableStatus]) => {
   switch (status) {
     case TableStatus.Available:
-      return 'Có sẵn'
+      return 'Available'
     case TableStatus.Reserved:
-      return 'Đã đặt'
+      return 'Reserved'
     default:
-      return 'Ẩn'
+      return 'Hidden'
   }
 }
 

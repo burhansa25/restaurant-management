@@ -14,7 +14,13 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { GetOrdersResType } from '@/schemas/order.schema'
 import { useContext } from 'react'
-import { formatCurrency, formatDateTimeToLocaleString, getVietnameseOrderStatus, simpleMatchText } from '@/lib/utils'
+import {
+  formatCurrency,
+  formatDateTimeToLocaleString,
+  getBrowserImageUrl,
+  getVietnameseOrderStatus,
+  simpleMatchText,
+} from '@/lib/utils'
 import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
 import { OrderStatus, OrderStatusValues } from '@/constants/type'
@@ -26,7 +32,7 @@ type OrderItem = GetOrdersResType['data'][0]
 const orderTableColumns: ColumnDef<OrderItem>[] = [
   {
     accessorKey: 'tableNumber',
-    header: 'Bàn',
+    header: 'Table',
     cell: ({ row }) => <div>{row.getValue('tableNumber')}</div>,
     filterFn: (row, columnId, filterValue: string) => {
       if (filterValue === undefined) return true
@@ -35,7 +41,7 @@ const orderTableColumns: ColumnDef<OrderItem>[] = [
   },
   {
     id: 'guestName',
-    header: 'Khách hàng',
+    header: 'Customer',
     cell: function Cell({ row }) {
       const { orderObjectByGuestId } = useContext(OrderTableContext)
       const guest = row.original.guest
@@ -43,7 +49,7 @@ const orderTableColumns: ColumnDef<OrderItem>[] = [
         <div>
           {!guest && (
             <div>
-              <span>Đã bị xóa</span>
+              <span>Deleted</span>
             </div>
           )}
           {guest && (
@@ -64,31 +70,33 @@ const orderTableColumns: ColumnDef<OrderItem>[] = [
     },
     filterFn: (row, columnId, filterValue: string) => {
       if (filterValue === undefined) return true
-      return simpleMatchText(row.original.guest?.name ?? 'Đã bị xóa', String(filterValue))
+      return simpleMatchText(row.original.guest?.name ?? 'Deleted', String(filterValue))
     }
   },
   {
     id: 'dishName',
-    header: 'Món ăn',
+    header: 'Dish',
     cell: ({ row }) => (
       <div className='flex items-center gap-2'>
         <Popover>
           <PopoverTrigger asChild>
             <Image
-              src={row.original.dishSnapshot.image}
+              src={getBrowserImageUrl(row.original.dishSnapshot.image)}
               alt={row.original.dishSnapshot.name}
               width={50}
               height={50}
+              unoptimized
               className='rounded-md object-cover w-[50px] h-[50px] cursor-pointer'
             />
           </PopoverTrigger>
           <PopoverContent>
             <div className='flex flex-wrap gap-2'>
               <Image
-                src={row.original.dishSnapshot.image}
+                src={getBrowserImageUrl(row.original.dishSnapshot.image)}
                 alt={row.original.dishSnapshot.name}
                 width={100}
                 height={100}
+                unoptimized
                 className='rounded-md object-cover w-[100px] h-[100px]'
               />
               <div className='space-y-1 text-sm'>
@@ -108,13 +116,18 @@ const orderTableColumns: ColumnDef<OrderItem>[] = [
             </Badge>
           </div>
           <span className='italic'>{formatCurrency(row.original.dishSnapshot.price * row.original.quantity)}</span>
+          {row.original.note ? (
+            <p className='max-w-[220px] whitespace-normal text-xs'>
+              <span className='font-medium'>Catatan:</span> {row.original.note}
+            </p>
+          ) : null}
         </div>
       </div>
     )
   },
   {
     accessorKey: 'status',
-    header: 'Trạng thái',
+    header: 'Status',
     cell: function Cell({ row }) {
       const { changeStatus } = useContext(OrderTableContext)
       const changeOrderStatus = async (status: (typeof OrderStatusValues)[number]) => {
@@ -149,12 +162,12 @@ const orderTableColumns: ColumnDef<OrderItem>[] = [
   },
   {
     id: 'orderHandlerName',
-    header: 'Người xử lý',
+    header: 'Handler',
     cell: ({ row }) => <div>{row.original.orderHandler?.name ?? ''}</div>
   },
   {
     accessorKey: 'createdAt',
-    header: () => <div>Tạo/Cập nhật</div>,
+    header: () => <div>Created/Updated</div>,
     cell: ({ row }) => (
       <div className='space-y-2 text-sm'>
         <div className='flex items-center space-x-4'>{formatDateTimeToLocaleString(row.getValue('createdAt'))}</div>
@@ -184,7 +197,7 @@ const orderTableColumns: ColumnDef<OrderItem>[] = [
           <DropdownMenuContent align='end'>
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={openEditOrder}>Sửa</DropdownMenuItem>
+            <DropdownMenuItem onClick={openEditOrder}>Edit</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )

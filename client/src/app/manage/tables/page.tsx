@@ -8,8 +8,8 @@ export default function TablesPage() {
       <div className="space-y-2">
         <Card x-chunk="dashboard-06-chunk-0">
           <CardHeader>
-            <CardTitle>Bàn ăn</CardTitle>
-            <CardDescription>Quản lý bàn ăn</CardDescription>
+            <CardTitle>Tables</CardTitle>
+            <CardDescription>Manage tables</CardDescription>
           </CardHeader>
           <CardContent>
             <Suspense>

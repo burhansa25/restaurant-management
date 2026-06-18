@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import envConfig from '@/config'
 import { LoginResType } from '@/schemas/auth.schema'
@@ -61,14 +60,14 @@ const request = async <Response>(
 ) => {
   let body: FormData | string | undefined = undefined
 
-  // xử lí body
+  // handle body
   if (options?.body instanceof FormData) {
     body = options.body
   } else if (options?.body) {
     body = JSON.stringify(options.body)
   }
 
-  // xử lí headers
+  // handle headers
   const baseHeaders: {
     [key: string]: string
   } =
@@ -85,7 +84,7 @@ const request = async <Response>(
     }
   }
 
-  // xử lí URL
+  // handle URL
   const baseUrl =
     options?.baseUrl === undefined
       ? isClient
@@ -94,7 +93,7 @@ const request = async <Response>(
       : options.baseUrl
   const fullUrl = `${baseUrl}/${normalizePath(url)}`
   // console.log('fullUrl:', fullUrl)
-  // gửi request
+  // send request
   const res = await fetch(fullUrl, {
     ...options,
     headers: {
@@ -111,7 +110,7 @@ const request = async <Response>(
     payload,
   }
   //_____________interceptor_______________//
-  // nếu có lỗi trong quá trình request
+  // handle request errors
   if (!res.ok) {
     if (res.status === ENTITY_ERROR_STATUS) {
       //422
@@ -125,7 +124,7 @@ const request = async <Response>(
     } else if (res.status === AUTHENTICATION_ERROR_STATUS) {
       //401
       if (isClient) {
-        //lỗi 401 khi chạy ở client
+        // 401 error on client
         if (!clientLogoutRequest) {
           console.log('http: token invalid, logging out...')
           clientLogoutRequest = fetch('/api/auth/logout', {
@@ -150,7 +149,7 @@ const request = async <Response>(
           }
         }
       } else {
-        //lỗi 401 khi chạy ở server
+        // 401 error on server
         const accessToken = (options?.headers as any)?.Authorization.split(' ')[1]
         redirect(`/logout?accessToken=${accessToken}`)
       }

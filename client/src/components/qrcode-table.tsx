@@ -26,8 +26,8 @@ export default function QRCodeTable({
     canvasContext.font = '15px Arial'
     canvasContext.textAlign = 'center'
     canvasContext.fillStyle = '#000'
-    canvasContext.fillText(`Bàn số ${tableNumber}`, width / 2, width + 20)
-    canvasContext.fillText('Quét mã QR để đặt món', width / 2, width + 50)
+    canvasContext.fillText(`Table ${tableNumber}`, width / 2, width + 20)
+    canvasContext.fillText('Scan QR code to order', width / 2, width + 50)
 
     const virtualCanvas = document.createElement('canvas')
 

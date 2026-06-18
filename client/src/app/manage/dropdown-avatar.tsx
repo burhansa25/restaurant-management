@@ -53,12 +53,12 @@ export default function DropdownAvatar() {
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link href={'/manage/setting'} className="cursor-pointer">
-            Cài đặt
+            Settings
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>Hỗ trợ</DropdownMenuItem>
+        <DropdownMenuItem>Support</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={logout}>Đăng xuất</DropdownMenuItem>
+        <DropdownMenuItem onClick={logout}>Sign Out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

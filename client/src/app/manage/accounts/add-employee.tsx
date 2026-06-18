@@ -87,13 +87,13 @@ export default function AddEmployee() {
       <DialogTrigger asChild>
         <Button size="sm" className="h-7 gap-1">
           <PlusCircle className="h-3.5 w-3.5" />
-          <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Tạo tài khoản</span>
+          <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Create Account</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-screen overflow-auto">
         <DialogHeader>
-          <DialogTitle>Tạo tài khoản</DialogTitle>
-          <DialogDescription>Các trường tên, email, mật khẩu là bắt buộc</DialogDescription>
+          <DialogTitle>Create Account</DialogTitle>
+          <DialogDescription>Name, email and password are required</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form
@@ -147,7 +147,7 @@ export default function AddEmployee() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="name">Tên</Label>
+                      <Label htmlFor="name">Name</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Input id="name" className="w-full" {...field} />
                         <FormMessage />
@@ -177,7 +177,7 @@ export default function AddEmployee() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="password">Mật khẩu</Label>
+                      <Label htmlFor="password">Password</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Input id="password" className="w-full" type="password" {...field} />
                         <FormMessage />
@@ -192,7 +192,7 @@ export default function AddEmployee() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
+                      <Label htmlFor="confirmPassword">Confirm Password</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Input id="confirmPassword" className="w-full" type="password" {...field} />
                         <FormMessage />
@@ -206,7 +206,7 @@ export default function AddEmployee() {
         </Form>
         <DialogFooter>
           <Button type="submit" form="add-employee-form">
-            Thêm
+            Add
           </Button>
         </DialogFooter>
       </DialogContent>

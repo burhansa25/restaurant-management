@@ -1,5 +1,5 @@
 import dishApi from '@/apiRequests/dish'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency, getBrowserImageUrl } from '@/lib/utils'
 import { DishListResType } from '@/schemas/dish.schema'
 import Image from 'next/image'
 
@@ -25,12 +25,12 @@ export default async function Home() {
           className="absolute top-0 left-0 w-full h-full object-cover"
         />
         <div className="z-20 relative py-10 md:py-20 px-4 sm:px-10 md:px-20">
-          <h1 className="text-center text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold">Penyetan Ayam Pak Burhan</h1>
-          <p className="text-center text-sm sm:text-base mt-4">Nikmati rasa terbaik di setiap momen</p>
+          <h1 className="text-center text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold">Katz Deli</h1>
+          <p className="text-center text-sm sm:text-base mt-4">Savor the best taste in every moment</p>
         </div>
       </section>
       <section className="space-y-10 py-16">
-        <h2 className="text-center text-2xl font-bold">Beragam pilihan hidangan</h2>
+        <h2 className="text-center text-2xl font-bold">Explore Our Menu</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
           {dishList.map((dish) => (
             <div className="flex gap-4 w" key={dish.id}>
@@ -40,7 +40,8 @@ export default async function Home() {
                   width={150}
                   height={150}
                   quality={100}
-                  src={dish.image}
+                  src={getBrowserImageUrl(dish.image)}
+                  unoptimized
                   className="object-cover w-[150px] h-[150px] rounded-md"
                 />
               </div>
