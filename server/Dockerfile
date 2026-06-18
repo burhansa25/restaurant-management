@@ -2,6 +2,8 @@ FROM node:24-bookworm-slim AS deps
 
 WORKDIR /app
 
+ENV PYTHON=/usr/bin/python3
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     make \
@@ -11,13 +13,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY package*.json ./
 
-RUN npm ci
+RUN npm ci \
+    --prefer-offline \
+    --no-audit \
+    --fund=false
 
 FROM node:24-bookworm-slim AS builder
 
 WORKDIR /app
 
-ARG DATABASE_URL=file:./dev.db
+ARG DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder
 ENV DATABASE_URL=$DATABASE_URL
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -34,7 +39,8 @@ COPY src ./src
 RUN npx prisma generate
 RUN npm run build
 
-RUN npm prune --omit=dev && npm cache clean --force
+RUN npm prune --omit=dev \
+    && npm cache clean --force
 
 FROM node:24-bookworm-slim AS runner
 
@@ -58,4 +64,4 @@ RUN mkdir -p uploads
 
 EXPOSE 4000
 
-CMD ["sh", "-c", "npx prisma generate && npx prisma migrate deploy && npm run start"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npm run start"]
