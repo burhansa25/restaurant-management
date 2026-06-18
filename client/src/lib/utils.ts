@@ -137,9 +137,9 @@ export const checkAndRefreshToken = async ({
 }
 
 export const formatCurrency = (number: number) => {
-  return new Intl.NumberFormat('vi-VN', {
+  return new Intl.NumberFormat('id-ID', {
     style: 'currency',
-    currency: 'VND',
+    currency: 'IDR',
   }).format(number)
 }
 

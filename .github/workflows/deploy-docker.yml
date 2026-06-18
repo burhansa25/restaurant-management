@@ -18,7 +18,10 @@ jobs:
 
     env:
       IMAGE_TAG: ${{ github.ref_name }}-${{ github.sha }}
+
       AZURE_REGISTRY: ${{ secrets.AZURE_REGISTRY }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
       SERVER_IMAGE: ${{ secrets.SERVER_IMAGE }}
       CLIENT_IMAGE: ${{ secrets.CLIENT_IMAGE }}
@@ -37,6 +40,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            server/package-lock.json
+            client/package-lock.json
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
 
       - name: Install Server Dependencies
         working-directory: ./server
@@ -47,14 +59,12 @@ jobs:
         run: npm ci
 
       - name: Prisma Validate
-        run: |
-          cd server
-          npx prisma validate
+        working-directory: ./server
+        run: npx prisma validate
 
       - name: TypeScript Check
-        run: |
-          cd server
-          npx tsc --noEmit
+        working-directory: ./server
+        run: npx tsc --noEmit
 
       - name: Lint Server
         working-directory: ./server
@@ -64,17 +74,6 @@ jobs:
         working-directory: ./client
         run: npm run lint
 
-      - name: Inspect Builder
-        run: docker buildx ls
-
-      - name: Build Server
-        working-directory: ./server
-        run: npm run build
-
-      - name: Build Client
-        working-directory: ./client
-        run: npm run build
-
       - name: Run Backend Tests
         working-directory: ./server
         run: npm test
@@ -83,9 +82,66 @@ jobs:
         working-directory: ./client
         run: npm test
 
-      - name: Test Coverage
-        working-directory: ./server
-        run: npm run test:coverage
+      - name: Build Backend Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          push: false
+          load: true
+
+          cache-from: type=gha,scope=backend-${{ github.ref_name }}
+          cache-to: type=gha,mode=max,scope=backend-${{ github.ref_name }}
+
+          build-args: |
+            DATABASE_URL=${{ env.DATABASE_URL }}
+
+          tags: |
+            ${{ env.AZURE_REGISTRY }}/${{ env.SERVER_IMAGE }}:${{ env.IMAGE_TAG }}
+
+      - name: Build Frontend Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./client
+          push: false
+          load: true
+
+          cache-from: type=gha,scope=frontend-${{ github.ref_name }}
+          cache-to: type=gha,mode=max,scope=frontend-${{ github.ref_name }}
+
+          build-args: |
+            NEXT_PUBLIC_API_ENDPOINT=${{ env.NEXT_PUBLIC_API_ENDPOINT }}
+            NEXT_PUBLIC_URL=${{ env.NEXT_PUBLIC_URL }}
+            DOCKER_PUBLIC_API_ENDPOINT=${{ env.DOCKER_PUBLIC_API_ENDPOINT }}
+
+          tags: |
+            ${{ env.AZURE_REGISTRY }}/${{ env.CLIENT_IMAGE }}:${{ env.IMAGE_TAG }}
+
+      - name: Run Trivy Scan Backend
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.AZURE_REGISTRY }}/${{ env.SERVER_IMAGE }}:${{ env.IMAGE_TAG }}
+
+      - name: Run Trivy Scan Frontend
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.AZURE_REGISTRY }}/${{ env.CLIENT_IMAGE }}:${{ env.IMAGE_TAG }}
+
+      - name: Log in to Azure Container Registry
+        uses: azure/docker-login@v2
+        with:
+          login-server: ${{ env.AZURE_REGISTRY }}
+          username: ${{ env.REGISTRY_USERNAME }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+
+      - name: Push Backend Docker Image
+        run: |
+          docker push \
+            "${AZURE_REGISTRY}/${SERVER_IMAGE}:${IMAGE_TAG}"
+
+      - name: Push Frontend Docker Image
+        run: |
+          docker push \
+            "${AZURE_REGISTRY}/${CLIENT_IMAGE}:${IMAGE_TAG}"
 
   continuous-deployment:
     name: Continuous Deployment
@@ -96,17 +152,9 @@ jobs:
       IMAGE_TAG: ${{ github.ref_name }}-${{ github.sha }}
 
       AZURE_REGISTRY: ${{ secrets.AZURE_REGISTRY }}
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
       SERVER_IMAGE: ${{ secrets.SERVER_IMAGE }}
       CLIENT_IMAGE: ${{ secrets.CLIENT_IMAGE }}
-
-      DATABASE_URL: ${{ github.ref_name == 'playout' && secrets.DATABASE_URL || secrets.STAGING_DATABASE_URL }}
-
-      NEXT_PUBLIC_API_ENDPOINT: ${{ github.ref_name == 'playout' && secrets.NEXT_PUBLIC_API_ENDPOINT || secrets.STAGING_NEXT_PUBLIC_API_ENDPOINT }}
-      NEXT_PUBLIC_URL: ${{ github.ref_name == 'playout' && secrets.NEXT_PUBLIC_URL || secrets.STAGING_NEXT_PUBLIC_URL }}
-      DOCKER_PUBLIC_API_ENDPOINT: ${{ github.ref_name == 'playout' && secrets.NEXT_PUBLIC_API_ENDPOINT || secrets.STAGING_NEXT_PUBLIC_API_ENDPOINT }}
 
       SERVER_APP_NAME: ${{ github.ref_name == 'playout' && secrets.SERVER_APP_NAME || secrets.STAGING_SERVER_APP_NAME }}
       CLIENT_APP_NAME: ${{ github.ref_name == 'playout' && secrets.CLIENT_APP_NAME || secrets.STAGING_CLIENT_APP_NAME }}
@@ -115,77 +163,45 @@ jobs:
       CLIENT_PUBLISH_PROFILE: ${{ github.ref_name == 'playout' && secrets.CLIENT_PUBLISH_PROFILE || secrets.STAGING_CLIENT_PUBLISH_PROFILE }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker-container
-
-      - name: Log in to Azure Container Registry
-        uses: azure/docker-login@v2
-        with:
-          login-server: ${{ env.AZURE_REGISTRY }}
-          username: ${{ env.REGISTRY_USERNAME }}
-          password: ${{ env.REGISTRY_PASSWORD }}
-
-      - name: Build and push backend image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./server
-
-          push: true
-          build-args: |
-            DATABASE_URL=${{ env.DATABASE_URL }}
-          tags: |
-            ${{ env.AZURE_REGISTRY }}/${{ env.SERVER_IMAGE }}:${{ env.IMAGE_TAG }}
-
-      - name: Run Trivy Scan Backend
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.AZURE_REGISTRY }}/${{ env.SERVER_IMAGE }}:${{ env.IMAGE_TAG }}
-
-      - name: Build and push frontend image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./client
-
-          push: true
-          build-args: |
-            NEXT_PUBLIC_API_ENDPOINT=${{ env.NEXT_PUBLIC_API_ENDPOINT }}
-            NEXT_PUBLIC_URL=${{ env.NEXT_PUBLIC_URL }}
-            DOCKER_PUBLIC_API_ENDPOINT=${{ env.DOCKER_PUBLIC_API_ENDPOINT }}
-          tags: |
-            ${{ env.AZURE_REGISTRY }}/${{ env.CLIENT_IMAGE }}:${{ env.IMAGE_TAG }}
-
-      - name: Deploy backend to Azure Web App for Containers
+      - name: Deploy Backend to Azure Web App for Containers
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.SERVER_APP_NAME }}
           publish-profile: ${{ env.SERVER_PUBLISH_PROFILE }}
           images: ${{ env.AZURE_REGISTRY }}/${{ env.SERVER_IMAGE }}:${{ env.IMAGE_TAG }}
 
-      - name: Deploy frontend to Azure Web App for Containers
+      - name: Deploy Frontend to Azure Web App for Containers
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.CLIENT_APP_NAME }}
           publish-profile: ${{ env.CLIENT_PUBLISH_PROFILE }}
           images: ${{ env.AZURE_REGISTRY }}/${{ env.CLIENT_IMAGE }}:${{ env.IMAGE_TAG }}
 
-      - name: Wait for deployment
-        run: sleep 60
+      - name: Wait for Deployment
+        run: sleep 30
 
       - name: Health Check Backend
         run: |
-          curl -f https://${{ env.SERVER_APP_NAME }}.azurewebsites.net/health
+          curl \
+            --fail \
+            --show-error \
+            --silent \
+            --retry 5 \
+            --retry-delay 10 \
+            --retry-all-errors \
+            "https://${SERVER_APP_NAME}.azurewebsites.net/health"
 
       - name: Health Check Frontend
         run: |
-          curl -f https://${{ env.CLIENT_APP_NAME }}.azurewebsites.net
-          
-          
+          curl \
+            --fail \
+            --show-error \
+            --silent \
+            --retry 5 \
+            --retry-delay 10 \
+            --retry-all-errors \
+            "https://${CLIENT_APP_NAME}.azurewebsites.net"
+
   notify-discord:
     name: Notify Discord
     runs-on: ubuntu-latest
@@ -208,7 +224,6 @@ jobs:
     steps:
       - name: Send Discord Notification
         run: |
-
           if [ "$BRANCH_NAME" = "playout" ]; then
             ENVIRONMENT="PRODUCTION"
           else
@@ -216,7 +231,7 @@ jobs:
           fi
 
           if [ "${{ needs.continuous-integration.result }}" = "success" ] && \
-            [ "${{ needs.continuous-deployment.result }}" = "success" ]; then
+             [ "${{ needs.continuous-deployment.result }}" = "success" ]; then
 
             TITLE="✅ Deployment Success"
             COLOR=3066993
