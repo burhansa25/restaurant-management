@@ -1,5 +1,6 @@
 import Fastify from 'fastify'
 import fastifyAuth from '@fastify/auth'
+import authRoutes from '@/routes/auth.route'
 import validatorCompilerPlugin from '@/plugins/validatorCompiler.plugins'
 
 const mockLoginController = jest.fn()
@@ -29,9 +30,6 @@ describe('Auth Routes', () => {
     await app.register(validatorCompilerPlugin)
     await app.register(fastifyAuth, { defaultRelation: 'and' })
 
-    jest.resetModules()
-    const authRoutes = require('../../src/routes/auth.route').default
-
     await app.register(authRoutes, { prefix: '/auth' })
     await app.ready()
   })
@@ -59,8 +57,6 @@ describe('Auth Routes', () => {
       url: '/auth/login',
       payload: { email: 'owner@test.com', password: 'password' }
     })
-
-    console.log('LOGIN_RESPONSE_BODY', response.body)
 
     expect(response.statusCode).toBe(200)
     expect(JSON.parse(response.body)).toEqual(
@@ -126,12 +122,6 @@ describe('Auth Routes', () => {
     expect(response.statusCode).toBe(400)
   })
   it('redirects successfully when google login succeeds', async () => {
-    mockLoginController.mockClear()
-
-    const mockLoginGoogleController =
-      require('@/controllers/auth.controller')
-        .loginGoogleController
-
     mockLoginGoogleController.mockResolvedValue({
       accessToken: 'google-access',
       refreshToken: 'google-refresh'
@@ -144,12 +134,8 @@ describe('Auth Routes', () => {
 
     expect(response.statusCode).toBe(302)
 
-    expect(response.headers.location)
-      .toContain('google-access')
+    expect(response.headers.location).toContain('google-access')
 
-    expect(response.headers.location)
-      .toContain('google-refresh')
+    expect(response.headers.location).toContain('google-refresh')
   })
 })
-
-

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import envConfig from '@/config'
 import { LoginResType } from '@/schemas/auth.schema'
